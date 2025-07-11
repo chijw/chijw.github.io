@@ -99,6 +99,11 @@ body {
 .section-content a {
     color: #111827;
     text-decoration: underline;
+    transition: text-decoration 0.2s ease;
+}
+
+.section-content a:hover {
+    text-decoration: none;
 }
 
 /* Section titles with spacing */
@@ -216,6 +221,11 @@ body {
 .publication-authors {
     color: #374151;
     margin-bottom: 0.5rem;
+    transition: text-decoration 0.2s ease;
+}
+
+.publication-authors a:hover {
+    text-decoration: none;
 }
 
 .publication-authors a {
