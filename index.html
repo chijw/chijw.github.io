@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jiawei Chi</title>
+    <meta name="description"
+        content="Jiawei Chi's personal portal. A student at Department of Electronic Engineering, Tsinghua University. Research interests in 3D Computer Vision and Video Generation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/icon.png">
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="index.html" class="site-title">Jiawei Chi</a>
+                </div>
+                <div class="page-meta">
+                    chijw22[at]mails.tsinghua.edu.cn
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="section">
+                <div class="section-grid">
+                    <div>
+                        <img src="assets/avatar.png" width="100%" height="100%" over-fit="cover">
+                        <!-- <h2 class="section-title">Jiawei Chi</h2> -->
+                    </div>
+                    <div class="section-content">
+                        <p>Undergraduate @ Department of Electronic Engineering, Tsinghua University.</p>
+                        <p>I'm serving as an intern working closely with <a href="https://duanyueqi.github.io/">Prof.
+                                Yueqi Duan</a> and <a href="https://liuff19.github.io/">Fangfu Liu</a>.</p>
+                        <p>My research interests lie in 3D Computer Vision and Video Generation.</p>
+                        <div class="button-group">
+                            <div class="button-group">
+                                <a href="https://github.com/chijw" class="btn btn-outline-blue"
+                                    style="text-decoration: none;">
+                                    GitHub</a>
+                                <a href="https://scholar.google.com/citations?user=JOyXGJMAAAAJ&hl=en&oi=ao"
+                                    class="btn btn-outline-emerald" style="text-decoration: none;">Scholar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Publications Section -->
+        <div class="container">
+            <section class="section">
+                <h1 class="section-title section-title-spaced" style="font-size: 1.5rem; margin-bottom: 0.1rem; ">
+                    Publications</h1>
+                <p class="publication-description">
+                    * indicates equal contribution.
+                </p>
+                <div class="publication">
+                    <div class="publication-image">
+                        <img src="assets/langsceneX.jpg">
+                    </div>
+                    <div class="publication-content">
+                        <h3>LangScene-X: Reconstruct Generalizable 3D Language-Embedded Scenes with TriMap Video
+                            Diffusion</h3>
+                        <p class="publication-authors">
+                            <a href="https://liuff19.github.io/">Fangfu Liu</a>, <a
+                                href="https://lifuguan.github.io/">Hao Li</a>, <strong>Jiawei Chi</strong>, <a
+                                href="https://hanyang-21.github.io/">Hanyang Wang</a>, Minghui Yang, Fudong Wang, <a
+                                href="https://duanyueqi.github.io/">Yueqi Duan</a><br>
+                            <span class="publication-venue">ICCV 2025</span>
+                        </p>
+                        <p class="publication-description">
+                            In this paper, we introduce a novel generative framework, coined LangScene-X, to unify and
+                            generate 3D consistent
+                            multi-modality information for reconstruction and understanding.
+                        </p>
+                        <div class="publication-links">
+                            <a href="https://liuff19.github.io/LangScene-X/" class="btn btn-outline-blue">Project</a>
+                            <a href="https://arxiv.org/abs/2507.02813" class="btn btn-outline-emerald">Paper</a>
+                            <a href="https://github.com/liuff19/LangScene-X/" class="btn btn-outline-red">Code</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="publication">
+                    <div class="publication-image">
+                        <img src="assets/videoscene.jpg">
+                    </div>
+                    <div class="publication-content">
+                        <h3>VideoScene: Distilling Video Diffusion Model to Generate 3D Scenes in One Step</h3>
+                        <p class="publication-authors">
+                            <a href="https://hanyang-21.github.io/">Hanyang Wang*</a>,
+                            <a href="https://liuff19.github.io/">Fangfu Liu*</a>,
+                            <strong>Jiawei Chi</strong>,
+                            <a href="hps://duanyueqi.github.io/">Yueqi Duan</a><br>
+                            <span class="publication-venue">
+                                CVRR 2025,
+                                <strong style="color: #FF2000;">Highlight Paper</strong>
+                            </span>
+                        <p class="publication-description">
+                            In this paper, we propose VideoScene to distill the video diffusion model to generate 3D
+                            scenes in one step, aiming to build an efficient and effective tool to bridge the gap from
+                            video to 3D.
+                        </p>
+
+                        <div class="publication-links">
+                            <a href="https://hanyang-21.github.io/VideoScene/" class="btn btn-outline-blue">Project</a>
+                            <a href="https://arxiv.org/abs/2504.01956" class="btn btn-outline-emerald">Paper</a>
+                            <a href="https://github.com/hanyang-21/VideoScene/" class="btn btn-outline-red">Code</a>
+                        </div>
+
+                    </div>
+            </section>
+        </div>
+
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>Jiawei Chi</p>
+                <p>Page last updated: 11 Jul, 2025</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current date
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    </script>
+</body>
+
+</html>
