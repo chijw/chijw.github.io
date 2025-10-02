@@ -85,6 +85,60 @@ body {
     gap: 2rem;
 }
 
+.avatar-media {
+    --avatar-media-aspect: 3 / 4;
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--avatar-media-aspect);
+    overflow: hidden;
+    cursor: pointer;
+    background: linear-gradient(160deg, #0f172a, #1f2937);
+    line-height: 0;
+    transition: opacity 0.4s ease;
+}
+
+.avatar-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(148, 163, 184, 0.2), rgba(255, 255, 255, 0));
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.avatar-media:hover::after,
+.avatar-media.is-hovering::after {
+    opacity: 1;
+}
+
+.avatar-media img,
+.avatar-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.3s ease;
+    border-radius: 0;
+}
+
+.avatar-media video {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    background-color: transparent;
+}
+
+.avatar-media.is-hovering video {
+    opacity: 1;
+}
+
+.avatar-media.is-hovering img {
+    opacity: 0;
+}
+
 .section-title {
     font-size: 1.125rem;
     font-weight: 500;

@@ -36,7 +36,11 @@
             <div class="section">
                 <div class="section-grid">
                     <div>
-                        <img src="assets/avatar.png" width="100%" height="100%" over-fit="cover">
+                        <div class="avatar-media" tabindex="0" aria-label="Jiawei Chi avatar video">
+                            <img src="assets/avatar.jpg" alt="Portrait of Jiawei Chi">
+                            <video class="avatar-video" src="assets/avatar.mp4" preload="metadata" muted loop
+                                playsinline poster="assets/avatar.jpg"></video>
+                        </div>
                         <!-- <h2 class="section-title">Jiawei Chi</h2> -->
                     </div>
                     <div class="section-content">
@@ -134,17 +138,73 @@
         <div class="container">
             <div class="footer-content">
                 <p>Jiawei Chi</p>
-                <p>Page last updated: 11 Jul, 2025</p>
+                <p>Page last updated: <span id="lastUpdated">11 Jul, 2025</span></p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Set current date
-        document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-GB', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
+        document.addEventListener('DOMContentLoaded', () =>
+        {
+            const lastUpdatedEl = document.getElementById('lastUpdated');
+            if (lastUpdatedEl)
+            {
+                lastUpdatedEl.textContent = new Date().toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+
+            const avatarMedia = document.querySelector('.avatar-media');
+            if (!avatarMedia) return;
+
+            const avatarVideo = avatarMedia.querySelector('video');
+            if (!avatarVideo) return;
+
+            const syncAspectRatio = () =>
+            {
+                const { videoWidth, videoHeight } = avatarVideo;
+                if (videoWidth && videoHeight)
+                {
+                    avatarMedia.style.setProperty('--avatar-media-aspect', `${videoWidth} / ${videoHeight}`);
+                }
+            };
+
+            if (avatarVideo.readyState >= 1)
+            {
+                syncAspectRatio();
+            }
+            else
+            {
+                avatarVideo.addEventListener('loadedmetadata', syncAspectRatio, { once: true });
+            }
+
+            const showVideo = () =>
+            {
+                avatarMedia.classList.add('is-hovering');
+                avatarVideo.currentTime = 0;
+                const playPromise = avatarVideo.play();
+                if (playPromise && typeof playPromise.catch === 'function')
+                {
+                    playPromise.catch(() => { });
+                }
+            };
+
+            const hideVideo = () =>
+            {
+                avatarMedia.classList.remove('is-hovering');
+                avatarVideo.pause();
+                avatarVideo.currentTime = 0;
+            };
+
+            avatarMedia.addEventListener('mouseenter', showVideo);
+            avatarMedia.addEventListener('mouseleave', hideVideo);
+            avatarMedia.addEventListener('focus', showVideo);
+            avatarMedia.addEventListener('blur', hideVideo);
+            avatarMedia.addEventListener('touchstart', showVideo, { passive: true });
+            avatarMedia.addEventListener('touchend', hideVideo);
+            avatarMedia.addEventListener('touchcancel', hideVideo);
         });
     </script>
 </body>
