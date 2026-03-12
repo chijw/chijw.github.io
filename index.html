@@ -9,19 +9,19 @@
         content="Jiawei Chi's personal portal. A student at Department of Electronic Engineering, Tsinghua University. Research interests in 3D Computer Vision and Video Generation.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
     <link rel="icon" type="image/png" href="assets/icon.png">
     <link rel="stylesheet" href="stylesheet.css">
 </head>
 
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
                 <div class="header-left">
-                    <a href="index.html" class="site-title">Jiawei Chi</a>
+                    <a href="index.html" class="site-title">JIAWEI CHI</a>
                 </div>
                 <div class="page-meta">
                     chijw22[at]mails.tsinghua.edu.cn
@@ -30,110 +30,158 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="main">
         <div class="container">
-            <div class="section">
+            <section class="section">
                 <div class="section-grid">
                     <div>
                         <div class="avatar-media" tabindex="0" aria-label="Jiawei Chi avatar video">
-                            <img src="assets/avatar.jpg" alt="Portrait of Jiawei Chi">
-                            <video class="avatar-video" src="assets/avatar.mp4" preload="metadata" muted loop
+                            <img src="assets/avatar.jpg" alt="Portrait of Jiawei Chi" width="544" height="584"
+                                fetchpriority="high" decoding="async">
+                            <video class="avatar-video" data-sources="assets/avatar-3dgs-5s.mp4, assets/avatar-diffusion-5s.mp4" preload="none" muted loop
                                 playsinline poster="assets/avatar.jpg"></video>
                         </div>
-                        <!-- <h2 class="section-title">Jiawei Chi</h2> -->
                     </div>
                     <div class="section-content">
                         <p>Undergraduate @ Department of Electronic Engineering, Tsinghua University.</p>
-                        <p>I'm serving as an intern working closely with <a href="https://duanyueqi.github.io/">Prof.
-                                Yueqi Duan</a> and <a href="https://liuff19.github.io/">Fangfu Liu</a>.</p>
+                        <p>I'm serving as an intern working closely with <a href="https://duanyueqi.github.io/"
+                                rel="noreferrer">Prof. Yueqi Duan</a> and <a href="https://liuff19.github.io/"
+                                rel="noreferrer">Fangfu Liu</a>.</p>
                         <p>My research interests lie in 3D Computer Vision and Video Generation.</p>
                         <div class="button-group">
-                            <div class="button-group">
-                                <a href="https://github.com/chijw" class="btn btn-outline-blue"
-                                    style="text-decoration: none;">
-                                    GitHub</a>
-                                <a href="https://scholar.google.com/citations?user=JOyXGJMAAAAJ&hl=en&oi=ao"
-                                    class="btn btn-outline-emerald" style="text-decoration: none;">Scholar</a>
-                            </div>
+                            <a href="https://github.com/chijw" class="btn btn-outline-blue btn-neutral-text"
+                                rel="noreferrer">GitHub</a>
+                            <a href="https://scholar.google.com/citations?user=JOyXGJMAAAAJ&hl=en&oi=ao"
+                                class="btn btn-outline-emerald btn-neutral-text" rel="noreferrer">Scholar</a>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
 
-
-
-        <!-- Publications Section -->
         <div class="container">
             <section class="section">
-                <h1 class="section-title section-title-spaced" style="font-size: 1.5rem; margin-bottom: 0.1rem; ">
-                    Publications</h1>
-                <p class="publication-description">
-                    * indicates equal contribution.
-                </p>
-                <div class="publication">
+                <h1 class="section-title section-title-spaced">PUBLICATIONS</h1>
+                <p class="publication-description">* indicates equal contribution, † indicates Corresponding Author.</p>
+
+                <article class="publication">
                     <div class="publication-image">
-                        <img src="assets/langsceneX.jpg">
+                        <img src="assets/spatial-ttt.png" alt="Teaser of Spatial-TTT" width="1200" height="630"
+                            loading="lazy" decoding="async">
+                    </div>
+                    <div class="publication-content">
+                        <h3>Spatial-TTT: Streaming Visual-based Spatial Intelligence with Test-Time Training</h3>
+                        <p class="publication-authors">
+                            <a href="https://liuff19.github.io/" rel="noreferrer">Fangfu Liu*</a>,
+                            <a href="https://github.com/diankun-wu/" rel="noreferrer">Diankun Wu*</a>,
+                            <strong>Jiawei Chi*</strong>,
+                            Yimo Cai,
+                            Yi-Hsin Hung,
+                            <a href="https://yuxumin.github.io/" rel="noreferrer">Xumin Yu</a>,
+                            <a href="https://scholar.google.com/citations?user=4dokjDoAAAAJ&hl=zh-CN" rel="noreferrer">Hao Li</a>,
+                            <a href="https://ancientmooner.github.io/" rel="noreferrer">Han Hu</a>,
+                            <a href="https://raoyongming.github.io/" rel="noreferrer">Yongming Rao</a><sup>†</sup>,
+                            <a href="https://duanyueqi.github.io/" rel="noreferrer">Yueqi Duan</a><sup>†</sup><br>
+                            <span class="publication-venue">Arxiv 2026</span>
+                        </p>
+                        <div class="publication-links">
+                            <a href="https://liuff19.github.io/Spatial-TTT/" class="btn btn-outline-blue"
+                                rel="noreferrer">Project</a>
+                            <a href="https://liuff19.github.io/Spatial-TTT/static/pdfs/Spatial_TTT_arxiv.pdf" class="btn btn-outline-emerald"
+                                rel="noreferrer">Paper</a>
+                            <a href="https://github.com/THU-SI/Spatial-TTT" class="btn btn-outline-red"
+                                rel="noreferrer">Code</a>
+                            <a href="https://huggingface.co/collections/THU-SI/spatial-ttt" class="btn btn-outline-violet"
+                                rel="noreferrer">Model</a>
+                            <a href="https://huggingface.co/collections/THU-SI/spatial-ttt" class="btn btn-outline-amber"
+                                rel="noreferrer">Data</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="publication">
+                    <div class="publication-image">
+                        <img src="assets/cfg-ctrl.png" alt="Teaser of CFG-Ctrl" width="3236" height="1392"
+                            loading="lazy" decoding="async">
+                    </div>
+                    <div class="publication-content">
+                        <h3>CFG-Ctrl: Control-Based Classifier-Free Diffusion Guidance</h3>
+                        <p class="publication-authors">
+                            <a href="https://hanyang-21.github.io/" rel="noreferrer">Hanyang Wang*</a>,
+                            <a href="https://github.com/MaxLiuyy" rel="noreferrer">Yiyang Liu*</a>,
+                            <strong>Jiawei Chi</strong>,
+                            <a href="https://liuff19.github.io/" rel="noreferrer">Fangfu Liu</a>,
+                            <a href="https://rosalind-bell.github.io/Xue-Ran/" rel="noreferrer">Ran Xue</a>,
+                            <a href="https://duanyueqi.github.io/" rel="noreferrer">Yueqi Duan</a><sup>†</sup><br>
+                            <span class="publication-venue">CVPR 2026</span>
+                        </p>
+                        <div class="publication-links">
+                            <a href="https://hanyang-21.github.io/CFG-Ctrl/" class="btn btn-outline-blue"
+                                rel="noreferrer">Project</a>
+                            <a href="https://arxiv.org/pdf/2603.03281.pdf" class="btn btn-outline-emerald"
+                                rel="noreferrer">Paper</a>
+                            <a href="https://github.com/hanyang-21/CFG-Ctrl" class="btn btn-outline-red"
+                                rel="noreferrer">Code</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="publication">
+                    <div class="publication-image">
+                        <img src="assets/langsceneX.jpg" alt="Preview of LangScene-X" width="600" height="325"
+                            loading="lazy" decoding="async">
                     </div>
                     <div class="publication-content">
                         <h3>LangScene-X: Reconstruct Generalizable 3D Language-Embedded Scenes with TriMap Video
                             Diffusion</h3>
                         <p class="publication-authors">
-                            <a href="https://liuff19.github.io/">Fangfu Liu</a>, <a
-                                href="https://lifuguan.github.io/">Hao Li</a>, <strong>Jiawei Chi</strong>, <a
-                                href="https://hanyang-21.github.io/">Hanyang Wang</a>, Minghui Yang, Fudong Wang, <a
-                                href="https://duanyueqi.github.io/">Yueqi Duan</a><br>
+                            <a href="https://liuff19.github.io/" rel="noreferrer">Fangfu Liu</a>,
+                            <a href="https://lifuguan.github.io/" rel="noreferrer">Hao Li</a>,
+                            <strong>Jiawei Chi</strong>,
+                            <a href="https://hanyang-21.github.io/" rel="noreferrer">Hanyang Wang</a>,
+                            Minghui Yang, Fudong Wang,
+                            <a href="https://duanyueqi.github.io/" rel="noreferrer">Yueqi Duan</a><br>
                             <span class="publication-venue">ICCV 2025</span>
                         </p>
-                        <!-- <p class="publication-description">
-                            In this paper, we introduce a novel generative framework, coined LangScene-X, to unify and
-                            generate 3D consistent
-                            multi-modality information for reconstruction and understanding.
-                        </p> -->
                         <div class="publication-links">
-                            <a href="https://liuff19.github.io/LangScene-X/" class="btn btn-outline-blue">Project</a>
-                            <a href="https://arxiv.org/abs/2507.02813" class="btn btn-outline-emerald">Paper</a>
-                            <a href="https://github.com/liuff19/LangScene-X/" class="btn btn-outline-red">Code</a>
+                            <a href="https://liuff19.github.io/LangScene-X/" class="btn btn-outline-blue"
+                                rel="noreferrer">Project</a>
+                            <a href="https://arxiv.org/abs/2507.02813" class="btn btn-outline-emerald"
+                                rel="noreferrer">Paper</a>
+                            <a href="https://github.com/liuff19/LangScene-X/" class="btn btn-outline-red"
+                                rel="noreferrer">Code</a>
                         </div>
                     </div>
-                </div>
+                </article>
 
-                <div class="publication">
+                <article class="publication">
                     <div class="publication-image">
-                        <img src="assets/videoscene.jpg">
+                        <img src="assets/videoscene.jpg" alt="Preview of VideoScene" width="600" height="338"
+                            loading="lazy" decoding="async">
                     </div>
                     <div class="publication-content">
                         <h3>VideoScene: Distilling Video Diffusion Model to Generate 3D Scenes in One Step</h3>
                         <p class="publication-authors">
-                            <a href="https://hanyang-21.github.io/">Hanyang Wang*</a>,
-                            <a href="https://liuff19.github.io/">Fangfu Liu*</a>,
+                            <a href="https://hanyang-21.github.io/" rel="noreferrer">Hanyang Wang*</a>,
+                            <a href="https://liuff19.github.io/" rel="noreferrer">Fangfu Liu*</a>,
                             <strong>Jiawei Chi</strong>,
-                            <a href="https://duanyueqi.github.io/">Yueqi Duan</a><br>
-                            <span class="publication-venue">
-                                CVRR 2025,
-                                <strong style="color: #FF2000;">Highlight Paper</strong>
-                            </span>
-                            <!-- <p class="publication-description">
-                            In this paper, we propose VideoScene to distill the video diffusion model to generate 3D
-                            scenes in one step, aiming to build an efficient and effective tool to bridge the gap from
-                            video to 3D.
-                            </p> -->
-
+                            <a href="https://duanyueqi.github.io/" rel="noreferrer">Yueqi Duan</a><br>
+                            <span class="publication-venue">CVRR 2025, <strong class="highlight-paper">Highlight Paper</strong></span>
+                        </p>
                         <div class="publication-links">
-                            <a href="https://hanyang-21.github.io/VideoScene/" class="btn btn-outline-blue">Project</a>
-                            <a href="https://arxiv.org/abs/2504.01956" class="btn btn-outline-emerald">Paper</a>
-                            <a href="https://github.com/hanyang-21/VideoScene/" class="btn btn-outline-red">Code</a>
+                            <a href="https://hanyang-21.github.io/VideoScene/" class="btn btn-outline-blue"
+                                rel="noreferrer">Project</a>
+                            <a href="https://arxiv.org/abs/2504.01956" class="btn btn-outline-emerald"
+                                rel="noreferrer">Paper</a>
+                            <a href="https://github.com/hanyang-21/VideoScene/" class="btn btn-outline-red"
+                                rel="noreferrer">Code</a>
                         </div>
-
                     </div>
+                </article>
             </section>
         </div>
-
-
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -146,62 +194,136 @@
     <script>
         document.addEventListener('DOMContentLoaded', () =>
         {
-            // const lastUpdatedEl = document.getElementById('lastUpdated');
-            // if (lastUpdatedEl)
-            // {
-            //     lastUpdatedEl.textContent = new Date().toLocaleDateString('en-GB', {
-            //         day: 'numeric',
-            //         month: 'long',
-            //         year: 'numeric'
-            //     });
-            // }
-
             const avatarMedia = document.querySelector('.avatar-media');
-            if (!avatarMedia) return;
+            const avatarVideo = avatarMedia?.querySelector('.avatar-video');
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            const avatarVideo = avatarMedia.querySelector('video');
-            if (!avatarVideo) return;
+            if (!avatarMedia || !avatarVideo || prefersReducedMotion)
+            {
+                return;
+            }
+
+            const videoSources = (avatarVideo.dataset.sources || '')
+                .split(',')
+                .map((source) => source.trim())
+                .filter(Boolean);
+
+            let isActive = false;
+            let loadPromise = null;
+            let currentSource = '';
+            let activationToken = 0;
+            let lastSourceIndex = -1;
 
             const syncAspectRatio = () =>
             {
-                const { videoWidth, videoHeight } = avatarVideo;
-                if (videoWidth && videoHeight)
+                if (avatarVideo.videoWidth && avatarVideo.videoHeight)
                 {
-                    avatarMedia.style.setProperty('--avatar-media-aspect', `${videoWidth} / ${videoHeight}`);
+                    avatarMedia.style.setProperty('--avatar-media-aspect', `${avatarVideo.videoWidth} / ${avatarVideo.videoHeight}`);
                 }
             };
 
-            if (avatarVideo.readyState >= 1)
+            const pickSource = () =>
             {
-                syncAspectRatio();
-            }
-            else
+                if (!videoSources.length)
+                {
+                    return '';
+                }
+
+                if (videoSources.length === 1)
+                {
+                    return videoSources[0];
+                }
+
+                let nextIndex = lastSourceIndex;
+                while (nextIndex === lastSourceIndex)
+                {
+                    nextIndex = Math.floor(Math.random() * videoSources.length);
+                }
+                lastSourceIndex = nextIndex;
+                return videoSources[nextIndex];
+            };
+
+            const ensureVideoLoaded = (source) =>
             {
-                avatarVideo.addEventListener('loadedmetadata', syncAspectRatio, { once: true });
-            }
+                if (!source)
+                {
+                    return Promise.resolve();
+                }
+
+                if (currentSource === source && loadPromise)
+                {
+                    return loadPromise;
+                }
+
+                currentSource = source;
+                loadPromise = new Promise((resolve) =>
+                {
+                    const handleLoaded = () =>
+                    {
+                        syncAspectRatio();
+                        resolve();
+                    };
+
+                    avatarVideo.addEventListener('loadedmetadata', handleLoaded, { once: true });
+                    avatarVideo.src = source;
+                    avatarVideo.load();
+                });
+
+                return loadPromise;
+            };
 
             const showVideo = () =>
             {
-                avatarMedia.classList.add('is-hovering');
-                avatarVideo.currentTime = 0;
-                const playPromise = avatarVideo.play();
-                if (playPromise && typeof playPromise.catch === 'function')
+                if (isActive)
                 {
-                    playPromise.catch(() => { });
+                    return;
                 }
+
+                isActive = true;
+                const source = pickSource();
+                const token = ++activationToken;
+
+                ensureVideoLoaded(source).then(() =>
+                {
+                    if (!isActive || token !== activationToken)
+                    {
+                        return;
+                    }
+
+                    avatarMedia.classList.add('is-hovering');
+                    avatarVideo.currentTime = 0;
+                    const playPromise = avatarVideo.play();
+                    if (playPromise && typeof playPromise.catch === 'function')
+                    {
+                        playPromise.catch(() => { });
+                    }
+                });
             };
 
             const hideVideo = () =>
             {
+                if (!isActive)
+                {
+                    return;
+                }
+
+                isActive = false;
+                activationToken += 1;
                 avatarMedia.classList.remove('is-hovering');
+
+                if (!loadPromise)
+                {
+                    return;
+                }
+
                 avatarVideo.pause();
                 avatarVideo.currentTime = 0;
             };
 
-            avatarMedia.addEventListener('mouseenter', showVideo);
-            avatarMedia.addEventListener('mouseleave', hideVideo);
-            avatarMedia.addEventListener('focus', showVideo);
-            avatarMedia.addEventListener('blur', hideVideo);
+            avatarMedia.addEventListener('pointerenter', showVideo);
+            avatarMedia.addEventListener('pointerleave', hideVideo);
+            avatarMedia.addEventListener('focusin', showVideo);
+            avatarMedia.addEventListener('focusout', hideVideo);
             avatarMedia.addEventListener('touchstart', showVideo, { passive: true });
             avatarMedia.addEventListener('touchend', hideVideo);
             avatarMedia.addEventListener('touchcancel', hideVideo);
