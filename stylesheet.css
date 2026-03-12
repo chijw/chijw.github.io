@@ -19,7 +19,8 @@ body {
 }
 
 img,
-video {
+video,
+canvas {
     display: block;
     max-width: 100%;
 }
@@ -91,52 +92,42 @@ video {
     cursor: pointer;
     background: transparent;
     line-height: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.25s ease;
 }
 
 .avatar-media::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, rgba(148, 163, 184, 0.2), rgba(255, 255, 255, 0));
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-}
-
-.avatar-media:hover::after,
-.avatar-media.is-hovering::after {
-    opacity: 1;
+    display: none;
 }
 
 .avatar-media img,
-.avatar-media video {
+.avatar-media .avatar-noise-canvas {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: opacity 0.3s ease;
     border-radius: 0;
 }
 
 .avatar-media img {
     position: relative;
     z-index: 1;
+    transition: opacity 0.2s ease;
 }
 
-.avatar-media video {
+.avatar-media .avatar-noise-canvas {
     position: absolute;
     inset: 0;
     z-index: 2;
     opacity: 0;
     pointer-events: none;
-    background-color: transparent;
+    background: transparent;
+    transition: opacity 0.2s ease;
 }
 
-.avatar-media.is-hovering video {
+.avatar-media.is-noise-ready .avatar-noise-canvas {
     opacity: 1;
 }
 
-.avatar-media.is-hovering img {
+.avatar-media.is-noise-ready img {
     opacity: 0;
 }
 

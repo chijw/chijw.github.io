@@ -35,11 +35,10 @@
             <section class="section">
                 <div class="section-grid">
                     <div>
-                        <div class="avatar-media" tabindex="0" aria-label="Jiawei Chi avatar video">
+                        <div class="avatar-media" tabindex="0" aria-label="Jiawei Chi avatar interactive portrait" data-bridge-targets="assets/avatar2-crop.png, assets/avatar3-crop.png, assets/avatar4-crop.png, assets/avatar5-crop.png, assets/avatar6-crop.png">
                             <img src="assets/avatar.jpg" alt="Portrait of Jiawei Chi" width="544" height="584"
                                 fetchpriority="high" decoding="async">
-                            <video class="avatar-video" data-sources="assets/avatar-3dgs-5s.mp4, assets/avatar-diffusion-5s.mp4" preload="none" muted loop
-                                playsinline poster="assets/avatar.jpg"></video>
+                            <canvas class="avatar-noise-canvas" aria-hidden="true"></canvas>
                         </div>
                     </div>
                     <div class="section-content">
@@ -66,7 +65,7 @@
 
                 <article class="publication">
                     <div class="publication-image">
-                        <img src="assets/spatial-ttt.png" alt="Teaser of Spatial-TTT" width="1200" height="630"
+                        <img src="assets/spatial-ttt.jpg" alt="Teaser of Spatial-TTT" width="960" height="514"
                             loading="lazy" decoding="async">
                     </div>
                     <div class="publication-content">
@@ -101,7 +100,7 @@
 
                 <article class="publication">
                     <div class="publication-image">
-                        <img src="assets/cfg-ctrl.png" alt="Teaser of CFG-Ctrl" width="3236" height="1392"
+                        <img src="assets/cfg-ctrl.jpg" alt="Teaser of CFG-Ctrl" width="960" height="413"
                             loading="lazy" decoding="async">
                     </div>
                     <div class="publication-content">
@@ -191,144 +190,7 @@
         </div>
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () =>
-        {
-            const avatarMedia = document.querySelector('.avatar-media');
-            const avatarVideo = avatarMedia?.querySelector('.avatar-video');
-            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-            if (!avatarMedia || !avatarVideo || prefersReducedMotion)
-            {
-                return;
-            }
-
-            const videoSources = (avatarVideo.dataset.sources || '')
-                .split(',')
-                .map((source) => source.trim())
-                .filter(Boolean);
-
-            let isActive = false;
-            let loadPromise = null;
-            let currentSource = '';
-            let activationToken = 0;
-            let lastSourceIndex = -1;
-
-            const syncAspectRatio = () =>
-            {
-                if (avatarVideo.videoWidth && avatarVideo.videoHeight)
-                {
-                    avatarMedia.style.setProperty('--avatar-media-aspect', `${avatarVideo.videoWidth} / ${avatarVideo.videoHeight}`);
-                }
-            };
-
-            const pickSource = () =>
-            {
-                if (!videoSources.length)
-                {
-                    return '';
-                }
-
-                if (videoSources.length === 1)
-                {
-                    return videoSources[0];
-                }
-
-                let nextIndex = lastSourceIndex;
-                while (nextIndex === lastSourceIndex)
-                {
-                    nextIndex = Math.floor(Math.random() * videoSources.length);
-                }
-                lastSourceIndex = nextIndex;
-                return videoSources[nextIndex];
-            };
-
-            const ensureVideoLoaded = (source) =>
-            {
-                if (!source)
-                {
-                    return Promise.resolve();
-                }
-
-                if (currentSource === source && loadPromise)
-                {
-                    return loadPromise;
-                }
-
-                currentSource = source;
-                loadPromise = new Promise((resolve) =>
-                {
-                    const handleLoaded = () =>
-                    {
-                        syncAspectRatio();
-                        resolve();
-                    };
-
-                    avatarVideo.addEventListener('loadedmetadata', handleLoaded, { once: true });
-                    avatarVideo.src = source;
-                    avatarVideo.load();
-                });
-
-                return loadPromise;
-            };
-
-            const showVideo = () =>
-            {
-                if (isActive)
-                {
-                    return;
-                }
-
-                isActive = true;
-                const source = pickSource();
-                const token = ++activationToken;
-
-                ensureVideoLoaded(source).then(() =>
-                {
-                    if (!isActive || token !== activationToken)
-                    {
-                        return;
-                    }
-
-                    avatarMedia.classList.add('is-hovering');
-                    avatarVideo.currentTime = 0;
-                    const playPromise = avatarVideo.play();
-                    if (playPromise && typeof playPromise.catch === 'function')
-                    {
-                        playPromise.catch(() => { });
-                    }
-                });
-            };
-
-            const hideVideo = () =>
-            {
-                if (!isActive)
-                {
-                    return;
-                }
-
-                isActive = false;
-                activationToken += 1;
-                avatarMedia.classList.remove('is-hovering');
-
-                if (!loadPromise)
-                {
-                    return;
-                }
-
-                avatarVideo.pause();
-                avatarVideo.currentTime = 0;
-            };
-
-            avatarMedia.addEventListener('pointerenter', showVideo);
-            avatarMedia.addEventListener('pointerleave', hideVideo);
-            avatarMedia.addEventListener('focusin', showVideo);
-            avatarMedia.addEventListener('focusout', hideVideo);
-            avatarMedia.addEventListener('touchstart', showVideo, { passive: true });
-            avatarMedia.addEventListener('touchend', hideVideo);
-            avatarMedia.addEventListener('touchcancel', hideVideo);
-        });
-    </script>
+    <script src="avatar-bridge.js"></script>
 </body>
 
 </html>
