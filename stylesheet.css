@@ -25,6 +25,12 @@ canvas {
     max-width: 100%;
 }
 
+img,
+canvas {
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
 .container {
     max-width: 1024px;
     margin: 0 auto;
