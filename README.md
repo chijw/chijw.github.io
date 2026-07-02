@@ -10,35 +10,30 @@ Source files for `chijw.github.io`, including the main academic homepage and the
 - Prefer `.jpg` for photographic or illustration-style assets unless transparency is required.
 - Reuse existing assets when possible; avoid introducing oversized originals directly into the repo.
 
-### Button style order
+### Typography and buttons
 
-When a block contains multiple action buttons, keep a stable semantic color order so cards remain visually consistent across the site:
+The site uses two typefaces with fixed roles: Newsreader (serif) for human-written content — the hero name, prose, paper titles, author lists — and Fira Code (mono) for metadata and labels — venues, dates, section headings, buttons, captions. One accent color (Tsinghua purple, `--accent` in `stylesheet.css`) is reserved for metadata and hover states.
 
-1. `btn-outline-blue`
-2. `btn-outline-emerald`
-3. `btn-outline-red`
-4. `btn-outline-violet`
-5. `btn-outline-amber`
-
-Not every card needs all five button types, but if multiple button styles appear together, preserve this ordering unless there is a strong local reason not to.
+All action buttons share the single `btn` class; there are no per-button color variants. Keep a stable order when multiple buttons appear together: Project, Paper, Code, Model, Data (or Repo, Upstream on project cards).
 
 ### Author list format
 
 Follow the site's existing publication-card markup conventions.
 
+- Put the venue above the title as an eyebrow: `<p class="publication-eyebrow"><span class="publication-venue">...</span></p>`, optionally followed by `<strong class="highlight-paper">...</strong>` for awards. (Exception: project cards on `sakiko/` keep the date inline inside `.publication-authors` via `<br>` + `<span class="publication-venue">`.)
 - Write authors as plain inline text separated by commas.
 - Link authors only when a homepage, profile, or project page is available.
 - Use `<strong>...</strong>` only for the locally highlighted author, not for the entire author line.
-- Put the venue or date on the next line via `<br>` followed by `<span class="publication-venue">...</span>`.
 - In documentation examples, prefer neutral placeholder URLs such as `https://example.com/...` instead of repo-specific relative paths.
 
 Preferred pattern:
 
 ```html
+<p class="publication-eyebrow"><span class="publication-venue">Conference 2026</span></p>
+<h3>Paper Title</h3>
 <p class="publication-authors">
     <strong>Author One</strong>,
-    <a href="https://example.com/author-two" rel="noreferrer">Author Two</a><br>
-    <span class="publication-venue">Conference or Venue, 2026</span>
+    <a href="https://example.com/author-two" rel="noreferrer">Author Two</a>
 </p>
 ```
 
