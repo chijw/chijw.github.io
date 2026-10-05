@@ -9,6 +9,7 @@ Source files for `chijw.github.io`, including the main academic homepage and the
 - Prefer compressed image assets with practical web dimensions.
 - Prefer `.jpg` for photographic or illustration-style assets unless transparency is required.
 - Reuse existing assets when possible; avoid introducing oversized originals directly into the repo.
+- Card images are shown in a 16:9 frame and cropped to fill it. For diagram-style teasers that would lose content, add `class="project-cover-contain"` to the `<img>` so the whole figure is shown.
 
 ### Button style order
 

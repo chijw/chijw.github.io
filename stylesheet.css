@@ -169,6 +169,7 @@ canvas {
 .button-group {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.75rem;
     margin-top: 0.75rem;
 }
@@ -274,7 +275,7 @@ canvas {
 
 .publication {
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 5fr);
     gap: 1.5rem;
     align-items: center;
     margin-bottom: 2rem;
@@ -282,8 +283,11 @@ canvas {
 
 .publication-image {
     width: 100%;
-    height: 9rem;
+    aspect-ratio: 16 / 9;
     align-self: center;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #eceef1;
     border-radius: 0.5rem;
 }
 
@@ -291,7 +295,11 @@ canvas {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 0.5rem;
+}
+
+/* For diagram-style teasers that would lose content to the 16:9 crop. */
+.publication-image img.project-cover-contain {
+    object-fit: contain;
 }
 
 .publication-content {
@@ -302,7 +310,7 @@ canvas {
 }
 
 .publication-content h3 {
-    font-weight: 500;
+    font-weight: 600;
     color: #111827;
     margin-bottom: 0.5rem;
 }
@@ -395,12 +403,13 @@ canvas {
     color: #111827;
     font-size: 0.98rem;
     line-height: 1.6;
-    text-decoration: none;
+    text-decoration: underline;
     letter-spacing: 0.02em;
+    transition: text-decoration 0.2s ease;
 }
 
 .friend-link-name:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .page-meta a {
@@ -457,7 +466,7 @@ canvas {
     }
 
     .button-group {
-        flex-direction: column;
+        justify-content: center;
     }
 }
 
