@@ -339,25 +339,6 @@ canvas {
     color: #ff2000;
 }
 
-/* Inserted by author-list.js next to a collapsed `.authors-more` tail. */
-.authors-toggle {
-    font: inherit;
-    font-size: 0.875rem;
-    color: #6b7280;
-    background: none;
-    border: 0;
-    padding: 0;
-    text-decoration: underline;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.authors-toggle:hover {
-    color: #111827;
-    text-decoration: none;
-}
-
 .publication-description {
     color: #6b7280;
     /* font-style: italic; */
