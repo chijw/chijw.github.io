@@ -16,21 +16,6 @@ body {
     font-feature-settings: "liga" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    position: relative;
-}
-
-/* Faint dot grid behind the header and hero that fades out before the first section. */
-body::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 40rem;
-    z-index: -1;
-    pointer-events: none;
-    background-image: radial-gradient(#d5dae2 1px, transparent 1.2px);
-    background-size: 22px 22px;
-    -webkit-mask-image: linear-gradient(#000 0%, #000 35%, transparent 100%);
-    mask-image: linear-gradient(#000 0%, #000 35%, transparent 100%);
 }
 
 img,
