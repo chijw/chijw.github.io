@@ -10,33 +10,33 @@ document.addEventListener('DOMContentLoaded', () =>
         return;
     }
 
-    const blockSize = 5;
-    const totalSteps = 72;
-    const noiseDuration = 4500;
-    const denoiseDuration = noiseDuration * 0.5;
-    const denoiseDelay = 200;
-    const noiseTimelineExponent = 0.9;
-    const noiseAmplitudeExponent = 1.1;
-    const exchangeSharpness = 14;
-    const noisePeak = 0.9;
-    const repickThreshold = 0.015;
+    // Every transition is a Brownian bridge between two portraits x0 and x1:
+    //
+    //     x_t = a_t * ((1 - m_t) * x0 + m_t * x1) + s * B_t,    t in [0, 1]
+    //
+    // B_t is pinned to zero at both ends, so a sample always leaves from and lands on a clean image.
+    // Fine detail is the first thing lost on the way in and the last thing recovered on the way out,
+    // the way a denoiser resolves coarse structure before texture.
+    const bridgeDuration = 3400;
+    const returnDuration = 2400;
+    const tapHoldDuration = 2600;
+    const noiseCellSize = 6;
+    const noiseModes = 3;
+    const noisePeak = 0.75;
+    const exchangeStart = 0.3;
+    const exchangeEnd = 0.7;
+    const detailHalvings = [0, 2, 4];
     const bridgeSources = (avatarMedia.dataset.bridgeTargets || '')
         .split(',')
         .map((source) => source.trim())
         .filter(Boolean);
 
     const clamp01 = (value) => Math.min(1, Math.max(0, value));
-    const lerp = (start, end, ratio) => start + (end - start) * ratio;
-    const sigmoid = (value) => 1 / (1 + Math.exp(-value));
-    const normalizedSigmoid = (value, sharpness) =>
+    const smoothstep = (value) =>
     {
         const t = clamp01(value);
-        const edge = sharpness * 0.5;
-        const lowerBound = sigmoid(-edge);
-        const upperBound = sigmoid(edge);
-        return clamp01((sigmoid(sharpness * (t - 0.5)) - lowerBound) / (upperBound - lowerBound));
+        return t * t * (3 - 2 * t);
     };
-    const toByte = (value) => Math.max(0, Math.min(255, Math.round((Math.max(-1, Math.min(1, value)) + 1) * 127.5)));
 
     const waitForImage = (image) =>
     {
@@ -133,14 +133,20 @@ document.addEventListener('DOMContentLoaded', () =>
 
             avatarMedia.style.setProperty('--avatar-media-aspect', `${width} / ${height}`);
 
-            const sourceCanvas = document.createElement('canvas');
-            sourceCanvas.width = width;
-            sourceCanvas.height = height;
+            const createScratch = () =>
+            {
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
 
-            const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
+                return { canvas, context: canvas.getContext('2d', { willReadFrequently: true }) };
+            };
+
+            const scratchA = createScratch();
+            const scratchB = createScratch();
             const renderContext = avatarCanvas.getContext('2d', { willReadFrequently: true });
 
-            if (!sourceContext || !renderContext)
+            if (!scratchA.context || !scratchB.context || !renderContext)
             {
                 return;
             }
@@ -148,29 +154,6 @@ document.addEventListener('DOMContentLoaded', () =>
             avatarCanvas.width = width;
             avatarCanvas.height = height;
             renderContext.imageSmoothingEnabled = true;
-
-            const extractPixels = (image) =>
-            {
-                sourceContext.clearRect(0, 0, width, height);
-                sourceContext.drawImage(image, 0, 0, width, height);
-
-                const sourceImageData = sourceContext.getImageData(0, 0, width, height);
-                const sourcePixels = sourceImageData.data;
-                const normalizedPixels = new Float32Array(width * height * 3);
-
-                for (let sourceIndex = 0, pixelIndex = 0; sourceIndex < sourcePixels.length; sourceIndex += 4, pixelIndex += 3)
-                {
-                    normalizedPixels[pixelIndex] = sourcePixels[sourceIndex] / 127.5 - 1;
-                    normalizedPixels[pixelIndex + 1] = sourcePixels[sourceIndex + 1] / 127.5 - 1;
-                    normalizedPixels[pixelIndex + 2] = sourcePixels[sourceIndex + 2] / 127.5 - 1;
-                }
-
-                return normalizedPixels;
-            };
-
-            const cleanPixels = extractPixels(avatarImage);
-            const renderImageData = renderContext.createImageData(width, height);
-            const renderPixels = renderImageData.data;
 
             const loadedAlternatives = (await Promise.allSettled(bridgeSources.map((source) => loadImage(source))))
                 .filter((result) => result.status === 'fulfilled')
@@ -181,117 +164,208 @@ document.addEventListener('DOMContentLoaded', () =>
                 return;
             }
 
-            const alternativePixelSets = loadedAlternatives.map((image) => extractPixels(image));
-            const blockColumns = Math.ceil(width / blockSize);
-            const blockRows = Math.ceil(height / blockSize);
-            const blockCount = blockColumns * blockRows;
-            const noiseStates = new Array(totalSteps + 1);
-
-            noiseStates[0] = new Float32Array(blockCount * 3);
-
-            for (let step = 1; step <= totalSteps; step += 1)
+            // Blurs by halving the image `halvings` times and doubling it back, ping-ponging between
+            // two canvases so that every resize is a clean 2x step.
+            const readDetailLevel = (image, halvings) =>
             {
-                const t = step / totalSteps;
-                const beta = 0.01 + 0.16 * Math.pow(t, 2.1);
-                const retain = Math.sqrt(1 - beta);
-                const inject = Math.sqrt(beta);
-                const previousState = noiseStates[step - 1];
-                const currentState = new Float32Array(blockCount * 3);
+                let from = scratchA;
+                let to = scratchB;
+                let levelWidth = width;
+                let levelHeight = height;
 
-                for (let channelIndex = 0; channelIndex < currentState.length; channelIndex += 1)
+                from.context.clearRect(0, 0, width, height);
+                from.context.drawImage(image, 0, 0, width, height);
+
+                const resample = (nextWidth, nextHeight) =>
                 {
-                    currentState[channelIndex] = retain * previousState[channelIndex] + inject * sampleGaussian();
+                    to.context.clearRect(0, 0, width, height);
+                    to.context.drawImage(from.canvas, 0, 0, levelWidth, levelHeight, 0, 0, nextWidth, nextHeight);
+                    [from, to] = [to, from];
+                    levelWidth = nextWidth;
+                    levelHeight = nextHeight;
+                };
+
+                const sizes = [];
+
+                for (let step = 0; step < halvings; step += 1)
+                {
+                    sizes.push([levelWidth, levelHeight]);
+                    resample(Math.max(1, Math.round(levelWidth / 2)), Math.max(1, Math.round(levelHeight / 2)));
                 }
 
-                noiseStates[step] = currentState;
+                while (sizes.length)
+                {
+                    resample(...sizes.pop());
+                }
+
+                return from.context.getImageData(0, 0, width, height).data;
+            };
+
+            // Detail levels are full-size RGBA buffers, built on demand and dropped once a portrait
+            // is neither on screen nor the next target.
+            const createPortrait = (image) => ({ image, levels: null });
+            const ensureLevels = (portrait) =>
+            {
+                if (!portrait.levels)
+                {
+                    portrait.levels = detailHalvings.map((halvings) => readDetailLevel(portrait.image, halvings));
+                }
+
+                return portrait.levels;
+            };
+
+            const home = createPortrait(avatarImage);
+            const alternatives = loadedAlternatives.map(createPortrait);
+
+            // B_t is drawn through its Karhunen-Loeve expansion,
+            //     B_t = sum_k Z_k * sqrt(2) * sin(k * pi * t) / (k * pi),
+            // so a few fixed Gaussian fields Z_k give noise that evolves continuously in t and
+            // vanishes exactly at t = 0 and t = 1. Every mode adds the same amount of frame-to-frame
+            // change, so keeping only the first few is what keeps the grain calm instead of flickering.
+            const cellColumns = Math.ceil(width / noiseCellSize);
+            const cellRows = Math.ceil(height / noiseCellSize);
+            const fieldLength = cellColumns * cellRows * 3;
+            const noiseFields = [];
+            const noiseOffsets = new Int32Array(noiseModes);
+            const noiseBuffer = new Float32Array(fieldLength);
+
+            for (let mode = 0; mode < noiseModes; mode += 1)
+            {
+                const field = new Float32Array(fieldLength);
+
+                for (let index = 0; index < fieldLength; index += 1)
+                {
+                    field[index] = sampleGaussian();
+                }
+
+                noiseFields.push(field);
             }
 
-            let currentProgress = 0;
-            let targetProgress = 0;
-            let animationFrame = 0;
-            let previousTimestamp = 0;
-            let denoiseDelayTimer = 0;
-            let activeTargetIndex = -1;
-            let activeTargetPixels = cleanPixels;
-            let lastTargetIndex = -1;
+            const renderImageData = renderContext.createImageData(width, height);
+            const renderPixels = renderImageData.data;
+            renderPixels.fill(255);
 
-            const pickTargetIndex = () =>
+            const layerPixels = new Array(4);
+            const layerWeights = new Float32Array(4);
+            let layerCount = 0;
+
+            // `detail` runs from 0 (sharp) to 1 (coarsest level); neighbouring levels are cross-faded.
+            const pushLayers = (levels, detail, weight) =>
             {
-                if (alternativePixelSets.length === 1)
+                if (weight <= 0.002)
                 {
-                    lastTargetIndex = 0;
-                    return 0;
-                }
-
-                let nextIndex = lastTargetIndex;
-
-                while (nextIndex === lastTargetIndex)
-                {
-                    nextIndex = Math.floor(Math.random() * alternativePixelSets.length);
-                }
-
-                lastTargetIndex = nextIndex;
-                return nextIndex;
-            };
-
-            const selectTarget = () =>
-            {
-                activeTargetIndex = pickTargetIndex();
-                activeTargetPixels = alternativePixelSets[activeTargetIndex] || cleanPixels;
-            };
-
-            const renderFromProgress = (progress) =>
-            {
-                const bridgeProgress = clamp01(progress);
-                if (bridgeProgress <= 0.0005)
-                {
-                    renderContext.drawImage(avatarImage, 0, 0, width, height);
                     return;
                 }
 
-                const sineWindow = Math.max(0, Math.sin(Math.PI * bridgeProgress));
-                const noisePhase = Math.pow(sineWindow, noiseTimelineExponent);
-                const rawStep = noisePhase * totalSteps;
-                const lowerStep = Math.min(totalSteps, Math.floor(rawStep));
-                const upperStep = Math.min(totalSteps, lowerStep + 1);
-                const stepMix = rawStep - lowerStep;
-                const lowerNoise = noiseStates[lowerStep];
-                const upperNoise = noiseStates[upperStep];
-                const transfer = normalizedSigmoid(bridgeProgress, exchangeSharpness);
-                const noiseScale = noisePeak * Math.pow(sineWindow, noiseAmplitudeExponent);
-                const imageEnergy = Math.max(0, 1 - noiseScale * noiseScale);
-                const sourceScale = Math.sqrt(imageEnergy * (1 - transfer));
-                const targetScale = Math.sqrt(imageEnergy * transfer);
-                const targetPixels = activeTargetPixels || cleanPixels;
+                const coarsest = levels.length - 1;
+                const position = clamp01(detail) * coarsest;
+                const lower = Math.min(coarsest, Math.floor(position));
+                const mix = position - lower;
 
-                for (let blockRow = 0; blockRow < blockRows; blockRow += 1)
+                if (lower === coarsest || mix < 0.002)
                 {
-                    const yStart = blockRow * blockSize;
-                    const yEnd = Math.min(yStart + blockSize, height);
+                    layerPixels[layerCount] = levels[lower];
+                    layerWeights[layerCount] = weight;
+                    layerCount += 1;
+                    return;
+                }
 
-                    for (let blockColumn = 0; blockColumn < blockColumns; blockColumn += 1)
+                layerPixels[layerCount] = levels[lower];
+                layerWeights[layerCount] = weight * (1 - mix);
+                layerPixels[layerCount + 1] = levels[lower + 1];
+                layerWeights[layerCount + 1] = weight * mix;
+                layerCount += 2;
+            };
+
+            let resting = home;
+            let bridge = null;
+            let animationFrame = 0;
+            let homeTimer = 0;
+            let isHovered = false;
+            let isKeyboardFocused = false;
+            let deck = [];
+
+            const renderBridge = (t) =>
+            {
+                // Noise: accumulate the bridge modes per cell, in byte units.
+                const amplitude = 2 * noisePeak * 127.5;
+                let variance = 0;
+
+                noiseBuffer.fill(0);
+
+                for (let mode = 1; mode <= noiseModes; mode += 1)
+                {
+                    const coefficient = amplitude * Math.SQRT2 * Math.sin(mode * Math.PI * t) / (mode * Math.PI);
+                    const field = noiseFields[mode - 1];
+
+                    variance += coefficient * coefficient;
+
+                    for (let index = 0, fieldIndex = noiseOffsets[mode - 1]; index < fieldLength; index += 1, fieldIndex += 1)
                     {
-                        const xStart = blockColumn * blockSize;
-                        const xEnd = Math.min(xStart + blockSize, width);
-                        const blockOffset = (blockRow * blockColumns + blockColumn) * 3;
-                        const noiseR = lerp(lowerNoise[blockOffset], upperNoise[blockOffset], stepMix);
-                        const noiseG = lerp(lowerNoise[blockOffset + 1], upperNoise[blockOffset + 1], stepMix);
-                        const noiseB = lerp(lowerNoise[blockOffset + 2], upperNoise[blockOffset + 2], stepMix);
+                        if (fieldIndex === fieldLength)
+                        {
+                            fieldIndex = 0;
+                        }
+
+                        noiseBuffer[index] += coefficient * field[fieldIndex];
+                    }
+                }
+
+                // Keep overall variance roughly constant: the image fades as the noise grows.
+                const imageScale = Math.sqrt(Math.max(0, 1 - variance / (127.5 * 127.5)));
+                const bias = 127.5 * (1 - imageScale);
+                const transfer = smoothstep((t - exchangeStart) / (exchangeEnd - exchangeStart));
+
+                layerCount = 0;
+                pushLayers(bridge.source, smoothstep(t * 2), imageScale * (1 - transfer));
+                pushLayers(ensureLevels(bridge.target), 1 - smoothstep(t * 2 - 1), imageScale * transfer);
+
+                for (let index = layerCount; index < 4; index += 1)
+                {
+                    layerPixels[index] = layerPixels[0];
+                    layerWeights[index] = 0;
+                }
+
+                const [pixelsA, pixelsB, pixelsC, pixelsD] = layerPixels;
+                const [weightA, weightB, weightC, weightD] = layerWeights;
+                const useFourLayers = layerCount > 2;
+
+                for (let cellRow = 0; cellRow < cellRows; cellRow += 1)
+                {
+                    const yStart = cellRow * noiseCellSize;
+                    const yEnd = Math.min(yStart + noiseCellSize, height);
+
+                    for (let cellColumn = 0; cellColumn < cellColumns; cellColumn += 1)
+                    {
+                        const xStart = cellColumn * noiseCellSize;
+                        const xEnd = Math.min(xStart + noiseCellSize, width);
+                        const cellOffset = (cellRow * cellColumns + cellColumn) * 3;
+                        const offsetR = noiseBuffer[cellOffset] + bias;
+                        const offsetG = noiseBuffer[cellOffset + 1] + bias;
+                        const offsetB = noiseBuffer[cellOffset + 2] + bias;
 
                         for (let y = yStart; y < yEnd; y += 1)
                         {
-                            let pixelIndex = (y * width + xStart) * 3;
-                            let renderIndex = (y * width + xStart) * 4;
+                            let index = (y * width + xStart) * 4;
 
-                            for (let x = xStart; x < xEnd; x += 1)
+                            // The clamped byte array rounds and clips the sums for us.
+                            if (useFourLayers)
                             {
-                                renderPixels[renderIndex] = toByte(sourceScale * cleanPixels[pixelIndex] + targetScale * targetPixels[pixelIndex] + noiseScale * noiseR);
-                                renderPixels[renderIndex + 1] = toByte(sourceScale * cleanPixels[pixelIndex + 1] + targetScale * targetPixels[pixelIndex + 1] + noiseScale * noiseG);
-                                renderPixels[renderIndex + 2] = toByte(sourceScale * cleanPixels[pixelIndex + 2] + targetScale * targetPixels[pixelIndex + 2] + noiseScale * noiseB);
-                                renderPixels[renderIndex + 3] = 255;
-
-                                pixelIndex += 3;
-                                renderIndex += 4;
+                                for (let x = xStart; x < xEnd; x += 1, index += 4)
+                                {
+                                    renderPixels[index] = weightA * pixelsA[index] + weightB * pixelsB[index] + weightC * pixelsC[index] + weightD * pixelsD[index] + offsetR;
+                                    renderPixels[index + 1] = weightA * pixelsA[index + 1] + weightB * pixelsB[index + 1] + weightC * pixelsC[index + 1] + weightD * pixelsD[index + 1] + offsetG;
+                                    renderPixels[index + 2] = weightA * pixelsA[index + 2] + weightB * pixelsB[index + 2] + weightC * pixelsC[index + 2] + weightD * pixelsD[index + 2] + offsetB;
+                                }
+                            }
+                            else
+                            {
+                                for (let x = xStart; x < xEnd; x += 1, index += 4)
+                                {
+                                    renderPixels[index] = weightA * pixelsA[index] + weightB * pixelsB[index] + offsetR;
+                                    renderPixels[index + 1] = weightA * pixelsA[index + 1] + weightB * pixelsB[index + 1] + offsetG;
+                                    renderPixels[index + 2] = weightA * pixelsA[index + 2] + weightB * pixelsB[index + 2] + offsetB;
+                                }
                             }
                         }
                     }
@@ -300,53 +374,77 @@ document.addEventListener('DOMContentLoaded', () =>
                 renderContext.putImageData(renderImageData, 0, 0);
             };
 
+            const destination = () => (bridge ? bridge.target : resting);
+            const isEngaged = () => isHovered || isKeyboardFocused;
+
+            const clearHomeTimer = () =>
+            {
+                window.clearTimeout(homeTimer);
+                homeTimer = 0;
+            };
+
+            const settle = () =>
+            {
+                resting = bridge.target;
+                bridge = null;
+                renderContext.drawImage(resting.image, 0, 0, width, height);
+
+                // Nothing is holding the sample in place (a tap, or the pointer left meanwhile).
+                if (!isEngaged() && resting !== home)
+                {
+                    homeTimer = window.setTimeout(release, tapHoldDuration);
+                }
+            };
+
             const stepAnimation = (timestamp) =>
             {
-                if (!previousTimestamp)
-                {
-                    previousTimestamp = timestamp;
-                }
-
-                const directionDuration = currentProgress < targetProgress ? noiseDuration : denoiseDuration;
-                const delta = (timestamp - previousTimestamp) / directionDuration;
-                previousTimestamp = timestamp;
-
-                if (currentProgress < targetProgress)
-                {
-                    currentProgress = Math.min(targetProgress, currentProgress + delta);
-                }
-                else if (currentProgress > targetProgress)
-                {
-                    currentProgress = Math.max(targetProgress, currentProgress - delta);
-                }
-
-                renderFromProgress(currentProgress);
-                avatarMedia.classList.toggle('is-hovering', currentProgress > 0.001);
-
-                if (Math.abs(currentProgress - targetProgress) > 0.0005)
-                {
-                    animationFrame = window.requestAnimationFrame(stepAnimation);
-                    return;
-                }
-
                 animationFrame = 0;
-                previousTimestamp = 0;
-            };
 
-            const clearDenoiseDelay = () =>
-            {
-                if (!denoiseDelayTimer)
+                if (!bridge)
                 {
                     return;
                 }
 
-                window.clearTimeout(denoiseDelayTimer);
-                denoiseDelayTimer = 0;
+                if (bridge.startTime === null)
+                {
+                    bridge.startTime = timestamp;
+                }
+
+                const elapsed = (timestamp - bridge.startTime) / bridge.duration;
+
+                if (elapsed >= 1)
+                {
+                    settle();
+                    return;
+                }
+
+                renderBridge(smoothstep(elapsed));
+                animationFrame = window.requestAnimationFrame(stepAnimation);
             };
 
-            const startAnimation = (nextTarget) =>
+            const startBridge = (target, duration) =>
             {
-                targetProgress = clamp01(nextTarget);
+                // A bridge can leave from anywhere, so one that interrupts another simply departs
+                // from the frame currently on screen, noise included.
+                // (If that one has not drawn a frame yet, its own starting point is still what is showing.)
+                const isMidFlight = bridge && bridge.startTime !== null;
+                const source = isMidFlight ? [new Uint8ClampedArray(renderPixels)] : (bridge ? bridge.source : ensureLevels(resting));
+
+                alternatives.forEach((portrait) =>
+                {
+                    if (portrait !== target && (bridge || portrait !== resting))
+                    {
+                        portrait.levels = null;
+                    }
+                });
+
+                for (let mode = 0; mode < noiseModes; mode += 1)
+                {
+                    noiseOffsets[mode] = Math.floor(Math.random() * fieldLength);
+                }
+
+                ensureLevels(target);
+                bridge = { source, target, duration, startTime: null };
 
                 if (!animationFrame)
                 {
@@ -354,41 +452,106 @@ document.addEventListener('DOMContentLoaded', () =>
                 }
             };
 
-            const activateBridge = () =>
+            // Deals the alternatives from a shuffled deck so every portrait shows up before any repeats.
+            const drawAlternative = () =>
             {
-                clearDenoiseDelay();
-
-                if (currentProgress <= repickThreshold || activeTargetIndex === -1)
+                if (!deck.length)
                 {
-                    selectTarget();
+                    deck = alternatives.slice();
+
+                    for (let index = deck.length - 1; index > 0; index -= 1)
+                    {
+                        const swapIndex = Math.floor(Math.random() * (index + 1));
+                        [deck[index], deck[swapIndex]] = [deck[swapIndex], deck[index]];
+                    }
                 }
 
-                startAnimation(1);
+                const current = destination();
+                const nextIndex = Math.max(0, deck.findIndex((portrait) => portrait !== current));
+
+                return deck.splice(nextIndex, 1)[0];
             };
 
-            const scheduleDenoise = () =>
+            const sample = () =>
             {
-                clearDenoiseDelay();
-                targetProgress = currentProgress;
-                previousTimestamp = 0;
+                clearHomeTimer();
+                startBridge(drawAlternative(), bridgeDuration);
+            };
 
-                denoiseDelayTimer = window.setTimeout(() =>
+            const release = () =>
+            {
+                clearHomeTimer();
+
+                if (!isEngaged() && destination() !== home)
                 {
-                    denoiseDelayTimer = 0;
-                    startAnimation(0);
-                }, denoiseDelay);
+                    startBridge(home, returnDuration);
+                }
+            };
+
+            const engage = () =>
+            {
+                clearHomeTimer();
+
+                if (destination() === home)
+                {
+                    sample();
+                }
             };
 
             avatarMedia.classList.add('is-noise-ready');
-            renderFromProgress(0);
+            renderContext.drawImage(avatarImage, 0, 0, width, height);
 
-            avatarMedia.addEventListener('pointerenter', activateBridge);
-            avatarMedia.addEventListener('pointerleave', scheduleDenoise);
-            avatarMedia.addEventListener('focusin', activateBridge);
-            avatarMedia.addEventListener('focusout', scheduleDenoise);
-            avatarMedia.addEventListener('touchstart', activateBridge, { passive: true });
-            avatarMedia.addEventListener('touchend', scheduleDenoise);
-            avatarMedia.addEventListener('touchcancel', scheduleDenoise);
+            // Mouse: hovering samples a portrait and holds it, leaving walks back home.
+            avatarMedia.addEventListener('pointerenter', (event) =>
+            {
+                if (event.pointerType === 'touch')
+                {
+                    return;
+                }
+
+                isHovered = true;
+                engage();
+            });
+            avatarMedia.addEventListener('pointerleave', (event) =>
+            {
+                if (event.pointerType === 'touch')
+                {
+                    return;
+                }
+
+                isHovered = false;
+                release();
+            });
+
+            // Keyboard: focus behaves like hover, Enter or Space draws another sample.
+            avatarMedia.addEventListener('focusin', () =>
+            {
+                if (!avatarMedia.matches(':focus-visible'))
+                {
+                    return;
+                }
+
+                isKeyboardFocused = true;
+                engage();
+            });
+            avatarMedia.addEventListener('focusout', () =>
+            {
+                isKeyboardFocused = false;
+                release();
+            });
+            avatarMedia.addEventListener('keydown', (event) =>
+            {
+                if (event.key !== 'Enter' && event.key !== ' ')
+                {
+                    return;
+                }
+
+                event.preventDefault();
+                sample();
+            });
+
+            // Click or tap: draw a fresh sample. A tap has no hover to hold it, so it drifts home after a pause.
+            avatarMedia.addEventListener('click', sample);
         }
         catch
         {
