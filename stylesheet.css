@@ -316,6 +316,8 @@ canvas {
 }
 
 .publication-authors {
+    font-size: 0.875rem;
+    line-height: 1.65;
     color: #374151;
     margin-bottom: 0.5rem;
 }
@@ -331,7 +333,7 @@ canvas {
 }
 
 .publication-venue {
-    font-size: 1rem;
+    font-size: 0.9375rem;
     font-weight: 600;
 }
 
