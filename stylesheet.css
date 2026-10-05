@@ -395,6 +395,34 @@ canvas {
     color: var(--ink);
 }
 
+/* Inserted by author-list.js next to a collapsed `.authors-more` tail. */
+.authors-toggle {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--accent);
+    background: var(--accent-wash);
+    border: 0;
+    border-radius: 999px;
+    padding: 0.28rem 0.6rem;
+    vertical-align: 0.1em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.authors-toggle:hover {
+    background: var(--accent);
+    color: var(--paper);
+}
+
+.authors-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
 .publication-description {
     font-family: var(--font-mono);
     font-size: 0.72rem;

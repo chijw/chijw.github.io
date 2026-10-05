@@ -24,6 +24,7 @@ Follow the site's existing publication-card markup conventions.
 - Write authors as plain inline text separated by commas.
 - Link authors only when a homepage, profile, or project page is available.
 - Use `<strong>...</strong>` only for the locally highlighted author, not for the entire author line.
+- For long author lists, keep the first five authors (through the highlighted one) inline and wrap the rest in `<span class="authors-more">...</span>`; `author-list.js` collapses that tail behind a "+N more" toggle.
 - In documentation examples, prefer neutral placeholder URLs such as `https://example.com/...` instead of repo-specific relative paths.
 
 Preferred pattern:
