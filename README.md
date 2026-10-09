@@ -31,7 +31,7 @@ Follow the site's existing publication-card markup conventions.
 - Link authors only when a homepage, profile, or project page is available.
 - Use `<strong>...</strong>` only for the locally highlighted author, not for the entire author line.
 - Put the venue or date on the next line via `<br>` followed by `<span class="publication-venue">...</span>`.
-- For very long author lists, keep the leading authors through the highlighted one, then `...`, then the last four.
+- For very long author lists, keep the leading authors through the highlighted one, then `et al.`, then the last four.
 - In documentation examples, prefer neutral placeholder URLs such as `https://example.com/...` instead of repo-specific relative paths.
 
 Preferred pattern:
