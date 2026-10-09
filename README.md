@@ -49,7 +49,7 @@ Preferred pattern:
 
 ### Editor chrome
 
-Both pages borrow a few pieces of nvim, and `nvim.js` keeps them in sync:
+The main page borrows a few pieces of nvim, and `nvim.js` keeps them in sync:
 
 - **Tabline** (`<header class="tabline">`): one `.tabline-tab` per section, in page order. A section is any element with a `data-path` (its "file name", e.g. `/preprints.bib`) and a matching `id`; when adding or removing a section, add or remove its tab too.
 - **Gutter and cursor line**: every `.publication` and `.friend-link-name` is a numbered line (relative to the cursor once it is on one) with a highlight band. No extra markup is needed per line.
@@ -62,10 +62,13 @@ Both bars are `position: fixed`, not sticky, so they do not move when the page r
 
 ### Stylesheet version
 
-Both pages load `stylesheet.css?v=YYYYMMDD`. Bump that date in both whenever the HTML starts relying on new CSS, so browsers holding an older cached stylesheet fetch the new one instead of rendering the new markup unstyled.
+`index.html` loads `stylesheet.css?v=YYYYMMDD` (and `sakiko/index.html` loads `sakiko.css` the same way). Bump the value whenever the HTML starts relying on new CSS, so browsers holding an older cached stylesheet fetch the new one instead of rendering the new markup unstyled.
 
 ### Sakiko page notes
 
-- Keep the `sakiko/` page visually aligned with the main site.
-- Prefer concise, academic-homepage-style project descriptions.
-- Credit upstream projects clearly when the work is a customization or downstream adaptation.
+Sakiko's page is her own and does not follow the main site's look. It is self-contained in `sakiko/` (`index.html`, `sakiko.css`, `sakiko.js`) and shares nothing with `stylesheet.css` or `nvim.js`.
+
+- The idea: she is a ghost with no machine of her own, so the page describes whichever one it is open on. The readout next to her portrait (`sakiko@your-mac`, os, cpu, gpu, memory, display, browser, time on the page) is filled in by the visitor's browser and sent nowhere. Without JavaScript only the `host` row shows, with its static text.
+- The portrait is dithered into dots on a canvas and turns into the picture on hover, focus or tap. Colours come from the portrait: night blue, cream, amber.
+- Keep project descriptions concise, and credit upstream projects clearly when the work is a customization or downstream adaptation.
+- Do not state which machines she runs on unless that is known to be true.

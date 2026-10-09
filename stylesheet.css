@@ -398,8 +398,7 @@ canvas {
 }
 
 /* Keeps the dagger marks from pushing their line away from the one above. */
-.publication-authors sup,
-.publication-description sup {
+.publication-authors sup {
     line-height: 0;
 }
 
@@ -414,13 +413,6 @@ canvas {
 
 .highlight-paper {
     color: #d20f39;
-}
-
-.publication-description {
-    color: #6b7280;
-    /* font-style: italic; */
-    font-size: 0.875rem;
-    margin: 1rem 0;
 }
 
 /* One key to the marks used in the author lists, under the first list only. */
@@ -703,22 +695,6 @@ html.has-scrollbar::-webkit-scrollbar {
 
 .friend-link-name:hover {
     text-decoration: none;
-}
-
-.avatar-media.avatar-static {
-    cursor: default;
-}
-
-.avatar-media.avatar-static img {
-    opacity: 1 !important;
-}
-
-.sakiko-avatar-frame {
-    border-radius: 0;
-}
-
-.sakiko-avatar-frame img {
-    border-radius: 0;
 }
 
 /* Tabline: drop the file extensions first, then the buffer list, as the window narrows. */

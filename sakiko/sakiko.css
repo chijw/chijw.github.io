@@ -1,0 +1,440 @@
+/*
+ * Sakiko's page: a ghost that lives in whatever machine the page is open on.
+ * Night-blue from her uniform, cream from her skin, amber from her eyes; one typeface.
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --night: #0d1319;
+    --line: #22303b;
+    --cream: #ece5da;
+    --mist: #aab4bd;
+    --slate: #71859a;
+    --amber: #dba55f;
+    color-scheme: dark;
+}
+
+html {
+    background: var(--night);
+}
+
+body {
+    min-height: 100vh;
+    font-family: "Fira Code", "JetBrains Mono", "Source Code Pro", "Roboto Mono", Monaco, Consolas, "Courier New", monospace;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--mist);
+    background: radial-gradient(52rem 36rem at 22% 9rem, rgba(113, 133, 154, 0.13), transparent 70%) no-repeat var(--night);
+    font-feature-settings: "liga" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    color: var(--night);
+    background: var(--amber);
+}
+
+:focus-visible {
+    outline: 1px solid var(--amber);
+    outline-offset: 4px;
+}
+
+img,
+canvas {
+    display: block;
+    max-width: 100%;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+a {
+    color: var(--cream);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--slate);
+    text-underline-offset: 4px;
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+a:hover {
+    color: var(--amber);
+    text-decoration-color: var(--amber);
+}
+
+.page {
+    max-width: 54rem;
+    margin: 0 auto;
+    padding: 5.5rem 1.5rem 3rem;
+}
+
+/* The readout: her portrait on the left, the machine she is in on the right. */
+.fetch {
+    display: grid;
+    grid-template-columns: minmax(0, 19rem) minmax(0, 1fr);
+    gap: 3.5rem;
+    align-items: center;
+}
+
+/*
+ * The portrait is drawn in dots by sakiko.js and turns into the picture while it is hovered,
+ * focused or tapped. Both layers fade out towards the edges, so there is no frame around her.
+ */
+.apparition {
+    position: relative;
+    aspect-ratio: 544 / 584;
+    cursor: pointer;
+    animation: drift 9s ease-in-out infinite alternate;
+}
+
+.apparition img,
+.apparition canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.9s ease;
+}
+
+.apparition img {
+    object-fit: cover;
+    -webkit-mask-image: radial-gradient(ellipse 50% 54% at 50% 45%, #000 52%, transparent 100%);
+    mask-image: radial-gradient(ellipse 50% 54% at 50% 45%, #000 52%, transparent 100%);
+}
+
+.apparition canvas {
+    opacity: 0;
+}
+
+/* `js` is set in the page head; `has-ghost` once the dots have been drawn. */
+.js .apparition img {
+    opacity: 0;
+}
+
+/* If the dots never come (the script failed to load, say), the picture shows up by itself. */
+.js:not(.has-ghost) .apparition img {
+    animation: appear 0.9s ease 4s forwards;
+}
+
+@keyframes appear {
+    to {
+        opacity: 1;
+    }
+}
+
+.has-ghost .apparition canvas {
+    opacity: 1;
+}
+
+.has-ghost .apparition:focus-visible img,
+.has-ghost .apparition.is-solid img {
+    opacity: 1;
+}
+
+.has-ghost .apparition:focus-visible canvas,
+.has-ghost .apparition.is-solid canvas {
+    opacity: 0;
+}
+
+/* Hover only where there is a pointer that can leave again; touch screens toggle instead. */
+@media (hover: hover) {
+    .has-ghost .apparition:hover img {
+        opacity: 1;
+    }
+
+    .has-ghost .apparition:hover canvas {
+        opacity: 0;
+    }
+}
+
+@keyframes drift {
+    from {
+        transform: translateY(5px);
+    }
+
+    to {
+        transform: translateY(-5px);
+    }
+}
+
+.fetch-title {
+    display: inline-block;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.5rem;
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--cream);
+    border-bottom: 1px dashed var(--slate);
+}
+
+.fetch-user {
+    color: var(--amber);
+}
+
+.fetch-at {
+    color: var(--slate);
+}
+
+.fetch-list {
+    display: grid;
+    grid-template-columns: 9ch minmax(0, 1fr);
+    font-size: 0.9rem;
+}
+
+.fetch-row {
+    display: contents;
+}
+
+.fetch-row[hidden] {
+    display: none;
+}
+
+.fetch-row dt {
+    color: var(--amber);
+}
+
+.fetch-row dd {
+    color: var(--cream);
+    overflow-wrap: anywhere;
+}
+
+/* Her colours, the way a system readout ends with the terminal's. */
+.fetch-palette {
+    display: flex;
+    margin-top: 1rem;
+}
+
+.fetch-palette span {
+    width: 1.5rem;
+    height: 0.75rem;
+}
+
+.fetch-palette span:nth-child(1) { background: #3f1f16; }
+.fetch-palette span:nth-child(2) { background: #926a57; }
+.fetch-palette span:nth-child(3) { background: #3f5a6f; }
+.fetch-palette span:nth-child(4) { background: #71859a; }
+.fetch-palette span:nth-child(5) { background: #b1a0a1; }
+.fetch-palette span:nth-child(6) { background: #cfd1d0; }
+.fetch-palette span:nth-child(7) { background: #f9f0e4; }
+.fetch-palette span:nth-child(8) { background: #dba55f; }
+
+.fetch-note {
+    max-width: 44ch;
+    margin-top: 1rem;
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--slate);
+}
+
+/* Without JavaScript nothing is read, so there is nothing to explain. */
+html:not(.js) .fetch-note {
+    display: none;
+}
+
+.about {
+    max-width: 64ch;
+    margin-top: 4.5rem;
+}
+
+.about-lead {
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    color: var(--cream);
+}
+
+.about-links,
+.project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+/* The arrow is its own box so that the link's underline stops before it. */
+.about-links a::after,
+.project-links a::after {
+    content: "\2197";
+    display: inline-block;
+    margin-left: 0.45em;
+    color: var(--slate);
+    transition: color 0.2s ease;
+}
+
+.about-links a:hover::after,
+.project-links a:hover::after {
+    color: var(--amber);
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 4.5rem 0 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--amber);
+}
+
+.label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+}
+
+.project {
+    display: grid;
+    grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+    gap: 1.75rem;
+    align-items: center;
+    padding: 1.5rem 0;
+}
+
+.project + .project {
+    border-top: 1px solid var(--line);
+}
+
+/* Covers stay a little faint until the project is looked at. */
+.project-cover {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #000000;
+    border: 1px solid var(--line);
+}
+
+.project-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.82;
+    filter: saturate(0.8);
+    transition: opacity 0.6s ease, filter 0.6s ease;
+}
+
+.project-cover img.is-banner {
+    object-fit: contain;
+}
+
+.project:hover .project-cover img,
+.project:focus-within .project-cover img {
+    opacity: 1;
+    filter: none;
+}
+
+.project h3 {
+    font-size: 1.05rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--cream);
+}
+
+.project-meta {
+    margin: 0.1rem 0 0.6rem;
+    font-size: 0.8rem;
+    color: var(--slate);
+}
+
+.project-meta a {
+    color: inherit;
+}
+
+.project-meta a:hover {
+    color: var(--amber);
+}
+
+.project p {
+    font-size: 0.9rem;
+}
+
+.friends {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    margin-top: 1.25rem;
+    letter-spacing: 0.04em;
+}
+
+.foot {
+    margin-top: 5rem;
+    padding-top: 1.25rem;
+    font-size: 0.78rem;
+    color: var(--slate);
+    border-top: 1px solid var(--line);
+}
+
+/* Arriving: the readout comes in line by line while the portrait is being drawn. */
+.js .fetch-info > *,
+.js .fetch-row > * {
+    animation: arrive 0.7s ease both;
+}
+
+.js .fetch-row:nth-child(2) > * { animation-delay: 0.08s; }
+.js .fetch-row:nth-child(3) > * { animation-delay: 0.16s; }
+.js .fetch-row:nth-child(4) > * { animation-delay: 0.24s; }
+.js .fetch-row:nth-child(5) > * { animation-delay: 0.32s; }
+.js .fetch-row:nth-child(6) > * { animation-delay: 0.4s; }
+.js .fetch-row:nth-child(7) > * { animation-delay: 0.48s; }
+.js .fetch-row:nth-child(8) > * { animation-delay: 0.56s; }
+.js .fetch-palette { animation-delay: 0.64s; }
+.js .fetch-note { animation-delay: 0.72s; }
+
+@keyframes arrive {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+@media (max-width: 720px) {
+    .page {
+        padding: 3rem 1.25rem 2.5rem;
+    }
+
+    .fetch {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .apparition {
+        width: min(100%, 17rem);
+        margin: 0 auto;
+    }
+
+    .about,
+    .label {
+        margin-top: 3.25rem;
+    }
+
+    .about-lead {
+        font-size: 1.15rem;
+    }
+
+    .project {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .apparition,
+    .js .fetch-info > *,
+    .js .fetch-row > * {
+        animation: none;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+    }
+}
