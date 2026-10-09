@@ -47,22 +47,22 @@ Preferred pattern:
 </p>
 ```
 
-### Editor chrome (main page)
+### Editor chrome
 
-`index.html` borrows three pieces of nvim and `nvim.js` keeps them in sync:
+Both pages borrow a few pieces of nvim, and `nvim.js` keeps them in sync:
 
 - **Tabline** (`<header class="tabline">`): one `.tabline-tab` per section, in page order. A section is any element with a `data-path` (its "file name", e.g. `/preprints.bib`) and a matching `id`; when adding or removing a section, add or remove its tab too.
 - **Gutter and cursor line**: every `.publication` and `.friend-link-name` is a numbered line (relative to the cursor once it is on one) with a highlight band. No extra markup is needed per line.
-- **Status line** (`<footer class="statusline">`): mode, branch, current section path, last-updated date and scroll percentage. Update the date in `#lastUpdated` by hand.
-- **Scrollbar**: where there is a mouse, `nvim.js` hides the native scrollbar and builds a slim one between the two bars, with ticks for the section starts and the cursor. Touch devices keep the native one.
+- **Status line** (`<footer class="statusline">`): mode, branch, current section path, last-updated date and scroll percentage. Update the date in `#lastUpdated` by hand. The tab, the path and the branch follow the cursor: the branch is the venue line of the entry under it written as a branch name (`CVPR 2026` becomes `cvpr-2026`), or the entry's `data-branch` if it has one, and the default (`main`) elsewhere.
+- **Scrollbar**: where there is a mouse, `nvim.js` hides the native scrollbar and builds one between the two bars, with ticks for the section starts and the cursor. Touch devices keep the native one.
 
-Keys: `j`/`k` (with counts) move the cursor through the lines, and `k` from the first line goes back to the top of the page; `Enter` opens the line under the cursor; `gg`/`G` go to the top/bottom (`{n}G` to line n); `gt`/`gT`/`{n}gt` switch sections; `d`/`u` scroll half a page; `Esc` clears the cursor.
+Keys: `j`/`k` (with counts) move the cursor through the lines, and `k` from the first line goes back to the top of the page; `Enter` opens the line under the cursor; `gg`/`G` go to the top/bottom (`{n}G` to line n); `gt`/`gT`/`{n}gt` switch sections and take the cursor along; `d`/`u` scroll half a page; `Esc` clears the cursor.
 
 Both bars are `position: fixed`, not sticky, so they do not move when the page rubber-bands.
 
 ### Stylesheet version
 
-`index.html` loads `stylesheet.css?v=YYYYMMDD`. Bump that date whenever the HTML starts relying on new CSS, so browsers holding an older cached stylesheet fetch the new one instead of rendering the new markup unstyled.
+Both pages load `stylesheet.css?v=YYYYMMDD`. Bump that date in both whenever the HTML starts relying on new CSS, so browsers holding an older cached stylesheet fetch the new one instead of rendering the new markup unstyled.
 
 ### Sakiko page notes
 
