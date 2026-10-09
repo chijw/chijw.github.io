@@ -23,6 +23,8 @@ When a block contains multiple action buttons, keep a stable semantic color orde
 
 Not every card needs all five button types, but if multiple button styles appear together, preserve this ordering unless there is a strong local reason not to.
 
+Buttons are flat, square chips: coloured text on a pale tint of the same colour. A colour class only sets three variables (`--btn-ink`, `--btn-tint`, `--btn-tint-strong`); `btn-neutral-text` gives the neutral chip used for profile links.
+
 ### Author list format
 
 Follow the site's existing publication-card markup conventions.
