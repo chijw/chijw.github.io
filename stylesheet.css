@@ -18,6 +18,11 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Selected text takes the status line's visual-mode colour; the text keeps its own colour. */
+::selection {
+    background-color: rgba(198, 160, 246, 0.4);
+}
+
 img,
 video,
 canvas {
@@ -166,6 +171,18 @@ canvas {
     margin-bottom: 0.1rem;
 }
 
+/* Panel number in front of a section title; statusline.js maps the same digit to a jump key. */
+.section-key {
+    margin-right: 0.6rem;
+    font-family: "Fira Code", "JetBrains Mono", monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: #9ca3af;
+    vertical-align: 0.2em;
+    user-select: none;
+}
+
 .button-group {
     display: flex;
     align-items: center;
@@ -190,6 +207,7 @@ canvas {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     will-change: transform;
     backface-visibility: hidden;
+    user-select: none;
 }
 
 .btn:hover {
@@ -375,6 +393,86 @@ canvas {
 }
 
 
+/*
+ * Footer styled after an editor status line; it stays pinned to the bottom of the window.
+ * Square segments, as in the terminal: the two ends carry the mode colour, the segments next to
+ * them sit on a darker surface, and the path fills the rest. Colours are a light, warm take on
+ * Catppuccin.
+ */
+.statusline {
+    --status-accent: #f9d9ef;
+    --status-surface: #e4d9ce;
+    --status-base: #f2ebe4;
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.5rem;
+    margin-top: 4rem;
+    color: #4c4f69;
+    background: var(--status-base);
+    white-space: nowrap;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* Text is selected: visual mode. */
+.statusline.is-visual {
+    --status-accent: #c6a0f6;
+}
+
+.statusline-group {
+    display: flex;
+    flex: none;
+}
+
+/* On a narrow window the path is the part that gives way. */
+.statusline-group:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.statusline-path {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.statusline-group > * {
+    padding: 0 0.7rem;
+}
+
+.statusline-mode,
+.statusline-position {
+    font-weight: 700;
+    color: #303446;
+    background: var(--status-accent);
+    transition: background-color 0.15s ease;
+}
+
+.statusline-position {
+    min-width: 3.6rem;
+    text-align: center;
+}
+
+.statusline-git,
+.statusline-info {
+    color: #5c5f77;
+    background: var(--status-surface);
+}
+
+.statusline-git svg {
+    display: inline-block;
+    width: 0.95em;
+    height: 0.95em;
+    margin-right: 0.45em;
+    vertical-align: -0.12em;
+}
+
 .friend-links-list {
     display: flex;
     flex-wrap: wrap;
@@ -450,6 +548,15 @@ canvas {
 
     .button-group {
         justify-content: center;
+    }
+
+    .statusline-git,
+    .statusline-wide {
+        display: none;
+    }
+
+    .statusline-group > * {
+        padding: 0 0.6rem;
     }
 }
 

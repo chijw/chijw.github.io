@@ -44,6 +44,10 @@ Preferred pattern:
 </p>
 ```
 
+### Stylesheet version
+
+`index.html` loads `stylesheet.css?v=YYYYMMDD`. Bump that date whenever the HTML starts relying on new CSS, so browsers holding an older cached stylesheet fetch the new one instead of rendering the new markup unstyled.
+
 ### Sakiko page notes
 
 - Keep the `sakiko/` page visually aligned with the main site.

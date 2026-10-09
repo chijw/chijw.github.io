@@ -13,7 +13,7 @@
         href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
     <link rel="icon" type="image/png" href="assets/icon.png">
-    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="stylesheet" href="stylesheet.css?v=20261010m">
 </head>
 
 <body>
@@ -42,11 +42,10 @@
                         </div>
                     </div>
                     <div class="section-content">
-                        <p>Undergraduate @ Department of Electronic Engineering, Tsinghua University.</p>
-                        <p>I'm serving as an intern working closely with <a href="https://duanyueqi.github.io/"
-                                rel="noreferrer">Prof. Yueqi Duan</a> and <a href="https://liuff19.github.io/"
-									rel="noreferrer">Fangfu Liu</a>.</p>
-                        <p>My research interests lie in 3D Computer Vision and Video Generation.</p>
+                        <p>I'm a first-year master's student @ Department of Electronic Engineering, Tsinghua University, advised by <a href="https://duanyueqi.github.io/"
+                                rel="noreferrer">Prof. Yueqi Duan</a>. I'm currently interning @ <a href="https://mirros.ai"
+                                rel="noreferrer">MirroS</a>.</p>
+                        <p>My research interests lie in generative modeling, especially world models.</p>
                         <div class="button-group">
                             <a href="https://github.com/chijw" class="btn btn-outline-blue btn-neutral-text"
                                 rel="noreferrer">GitHub</a>
@@ -59,8 +58,8 @@
         </div>
 
         <div class="container">
-            <section class="section">
-                <h1 class="section-title section-title-spaced">PUBLICATIONS &amp; PREPRINTS</h1>
+            <section class="section" data-path="/preprints">
+                <h1 class="section-title section-title-spaced"><span class="section-key" aria-hidden="true">[1]</span>PREPRINTS</h1>
 					<p class="publication-description">* denotes equal contribution, <sup>†</sup> denotes corresponding author(s) or project lead(s).</p>
 
                 <article class="publication">
@@ -86,7 +85,7 @@
                             <a href="https://jiangranlv.github.io/" rel="noreferrer">Jiangran Lyu</a>,
                             <a href="https://manchery.github.io/" rel="noreferrer">Jialong Wu<sup>†</sup></a>,
                             <a href="https://liuff19.github.io/" rel="noreferrer">Fangfu Liu<sup>†</sup></a><br>
-                            <span class="publication-venue">Arxiv 2026</span>
+                            <span class="publication-venue">arXiv 2026</span>
                         </p>
                         <div class="publication-links">
                             <a href="https://mirros-lab.github.io/agent-garten/" class="btn btn-outline-blue"
@@ -125,7 +124,7 @@
                             <a href="https://jiangranlv.github.io/" rel="noreferrer">Jiangran Lyu</a>,
                             <a href="https://liuff19.github.io/" rel="noreferrer">Fangfu Liu</a>,
                             <a href="https://manchery.github.io/" rel="noreferrer">Jialong Wu<sup>†</sup></a><br>
-                            <span class="publication-venue">Arxiv 2026</span>
+                            <span class="publication-venue">arXiv 2026</span>
                         </p>
                         <div class="publication-links">
                             <a href="https://mirros-lab.github.io/code-as-world/" class="btn btn-outline-blue"
@@ -156,7 +155,7 @@
                             <a href="https://manchery.github.io/" rel="noreferrer">Jialong Wu<sup>†</sup></a>,
                             <a href="https://jiangranlv.github.io/" rel="noreferrer">Jiangran Lyu<sup>†</sup></a>,
                             <a href="https://liuff19.github.io/" rel="noreferrer">Fangfu Liu<sup>†</sup></a><br>
-                            <span class="publication-venue">Arxiv 2026</span>
+                            <span class="publication-venue">arXiv 2026</span>
                         </p>
                         <div class="publication-links">
                             <a href="https://mirros-lab.github.io/HarnessEval-W/" class="btn btn-outline-blue"
@@ -170,6 +169,13 @@
                         </div>
                     </div>
                 </article>
+            </section>
+        </div>
+
+        <div class="container">
+            <section class="section" data-path="/publications">
+                <h1 class="section-title section-title-spaced"><span class="section-key" aria-hidden="true">[2]</span>PUBLICATIONS</h1>
+					<p class="publication-description">* denotes equal contribution, <sup>†</sup> denotes corresponding author(s) or project lead(s).</p>
 
                 <article class="publication">
                     <div class="publication-image">
@@ -289,8 +295,8 @@
         </div>
 
         <div class="container">
-            <section class="section">
-                <h1 class="section-title section-title-spaced">FRIEND LINKS</h1>
+            <section class="section" data-path="/friends">
+                <h1 class="section-title section-title-spaced"><span class="section-key" aria-hidden="true">[3]</span>FRIEND LINKS</h1>
                 <div class="friend-links-list">
                     <a href="sakiko/" class="friend-link-name" aria-label="Visit Sakiko's page">SAKIKO</a>
                 </div>
@@ -298,16 +304,20 @@
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <p>Jiawei Chi</p>
-                <p>Page last updated: <span id="lastUpdated">10 Oct, 2026</span></p>
-            </div>
+    <footer class="statusline">
+        <div class="statusline-group">
+            <span class="statusline-mode" aria-hidden="true">Normal</span>
+            <span class="statusline-git" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="4.5" cy="3.5" r="1.8"/><circle cx="4.5" cy="12.5" r="1.8"/><circle cx="11.5" cy="5.5" r="1.8"/><path d="M4.5 5.3v5.4M11.5 7.3c0 2.4-3.2 2.2-5.6 3.6"/></svg>main</span>
+            <span class="statusline-path" aria-hidden="true">~<span class="statusline-wide">/chijw.github.io</span><span class="statusline-section"></span></span>
+        </div>
+        <div class="statusline-group">
+            <span class="statusline-info"><span class="statusline-wide">updated </span><span id="lastUpdated">10 Oct, 2026</span></span>
+            <span class="statusline-position" aria-hidden="true">0%</span>
         </div>
     </footer>
 
     <script src="avatar-bridge.js"></script>
+    <script src="statusline.js"></script>
 </body>
 
 </html>
