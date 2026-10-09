@@ -29,6 +29,7 @@ Follow the site's existing publication-card markup conventions.
 
 - Write authors as plain inline text separated by commas.
 - Link authors only when a homepage, profile, or project page is available.
+- A name should never wrap across lines. Linked and bold names are kept whole by CSS; in a plain name, join the parts with `&nbsp;` (and put `&#8288;` after a hyphen), e.g. `Yi-&#8288;Hsin&nbsp;Hung`.
 - Use `<strong>...</strong>` only for the locally highlighted author, not for the entire author line.
 - Put the venue or date on the next line via `<br>` followed by `<span class="publication-venue">...</span>`.
 - For very long author lists, keep the leading authors through the highlighted one, then `et al.`, then the last four.
@@ -43,6 +44,19 @@ Preferred pattern:
     <span class="publication-venue">Conference or Venue, 2026</span>
 </p>
 ```
+
+### Editor chrome (main page)
+
+`index.html` borrows three pieces of nvim and `nvim.js` keeps them in sync:
+
+- **Tabline** (`<header class="tabline">`): one `.tabline-tab` per section, in page order. A section is any element with a `data-path` (its "file name", e.g. `/preprints.bib`) and a matching `id`; when adding or removing a section, add or remove its tab too.
+- **Gutter and cursor line**: every `.publication` and `.friend-link-name` is a numbered line (relative to the cursor once it is on one) with a highlight band. No extra markup is needed per line.
+- **Status line** (`<footer class="statusline">`): mode, branch, current section path, last-updated date and scroll percentage. Update the date in `#lastUpdated` by hand.
+- **Scrollbar**: where there is a mouse, `nvim.js` hides the native scrollbar and builds a slim one between the two bars, with ticks for the section starts and the cursor. Touch devices keep the native one.
+
+Keys: `j`/`k` (with counts) move the cursor through the lines, and `k` from the first line goes back to the top of the page; `Enter` opens the line under the cursor; `gg`/`G` go to the top/bottom (`{n}G` to line n); `gt`/`gT`/`{n}gt` switch sections; `d`/`u` scroll half a page; `Esc` clears the cursor.
+
+Both bars are `position: fixed`, not sticky, so they do not move when the page rubber-bands.
 
 ### Stylesheet version
 

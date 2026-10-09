@@ -6,13 +6,18 @@
 
 :root {
     --font-heading: "Space Grotesk", "Inter", "Segoe UI", sans-serif;
+    --page: #fbfbfc;
+    --tabline-height: 1.9rem;
+    --statusline-height: 1.5rem;
+    --scrollbar-width: 0.75rem;
+    --gutter-offset: 1.25rem;
 }
 
 body {
     font-family: "Fira Code", "JetBrains Mono", "Source Code Pro", "Roboto Mono", "Ubuntu Mono", Monaco, Consolas, "Courier New", monospace;
     line-height: 1.6;
     color: #1f2937;
-    background-color: #fbfbfc;
+    background-color: var(--page);
     font-feature-settings: "liga" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -21,6 +26,11 @@ body {
 /* Selected text takes the status line's visual-mode colour; the text keeps its own colour. */
 ::selection {
     background-color: rgba(198, 160, 246, 0.4);
+}
+
+:focus-visible {
+    outline: 2px solid #c6a0f6;
+    outline-offset: 2px;
 }
 
 img,
@@ -77,10 +87,12 @@ canvas {
 
 .main {
     padding: 3rem 0;
+    overflow-x: clip;
 }
 
 .section {
     padding: 3rem 0;
+    scroll-margin-top: var(--tabline-height);
 }
 
 .section:not(:first-child) {
@@ -150,6 +162,16 @@ canvas {
     color: #111827;
 }
 
+.hero-name {
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
+    color: #111827;
+}
+
 .section-content p {
     margin-bottom: 1rem;
     font-size: 1.03rem;
@@ -169,18 +191,6 @@ canvas {
 
 .section-title-spaced {
     margin-bottom: 0.1rem;
-}
-
-/* Panel number in front of a section title; statusline.js maps the same digit to a jump key. */
-.section-key {
-    margin-right: 0.6rem;
-    font-family: "Fira Code", "JetBrains Mono", monospace;
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0;
-    color: #9ca3af;
-    vertical-align: 0.2em;
-    user-select: none;
 }
 
 .button-group {
@@ -297,6 +307,82 @@ canvas {
     gap: 1.5rem;
     align-items: center;
     margin-bottom: 2rem;
+    position: relative;
+    scroll-margin: calc(var(--tabline-height) + 1.5rem) 0 calc(var(--statusline-height) + 1.5rem);
+}
+
+/*
+ * Numbered lines: every paper and friend link is a line the cursor can sit on (nvim.js sets
+ * .is-cursor and data-line).
+ *
+ * Cursor line: a band behind the current line. It bleeds a little past the text column, or
+ * across the whole window where .main can clip it.
+ */
+.publication::before,
+.friend-link-name::before {
+    content: "";
+    position: absolute;
+    top: -1rem;
+    bottom: -1rem;
+    left: -1rem;
+    right: -1rem;
+    z-index: -1;
+    background: #f4efea;
+    opacity: 0;
+}
+
+.friend-link-name::before {
+    top: -0.6rem;
+    bottom: -0.6rem;
+}
+
+@supports (overflow: clip) {
+    .publication::before,
+    .friend-link-name::before {
+        left: -100vw;
+        right: -100vw;
+    }
+}
+
+@media (hover: hover) {
+    .publication.is-cursor::before,
+    .friend-link-name.is-cursor::before {
+        opacity: 1;
+    }
+}
+
+/*
+ * Line-number gutter in the left margin, shown only when the window has room for it: a column two
+ * digits wide in the text's own size, dim like LineNr, with the cursor's number picked out like
+ * CursorLineNr.
+ */
+@media (min-width: 1140px) {
+    .publication::after,
+    .friend-link-name::after {
+        content: attr(data-line);
+        position: absolute;
+        top: 50%;
+        right: 100%;
+        width: 2ch;
+        margin-right: var(--gutter-offset);
+        transform: translateY(-50%);
+        font-size: 0.875rem;
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: 0;
+        text-align: right;
+        color: #b9afa5;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    /* As in nvim, the cursor's own (absolute) number moves to the left edge of the column. */
+    .publication.is-cursor::after,
+    .friend-link-name.is-cursor::after {
+        font-weight: 700;
+        text-align: left;
+        color: #d65fa3;
+    }
 }
 
 .publication-image {
@@ -346,6 +432,18 @@ canvas {
     transition: text-decoration 0.2s ease;
 }
 
+/* A name never breaks across two lines (plain names use non-breaking spaces in the markup). */
+.publication-authors a,
+.publication-authors strong {
+    white-space: nowrap;
+}
+
+/* Keeps the dagger marks from pushing their line away from the one above. */
+.publication-authors sup,
+.publication-description sup {
+    line-height: 0;
+}
+
 .publication-authors a:hover {
     text-decoration: none;
 }
@@ -356,7 +454,7 @@ canvas {
 }
 
 .highlight-paper {
-    color: #ff2000;
+    color: #d20f39;
 }
 
 .publication-description {
@@ -364,6 +462,27 @@ canvas {
     /* font-style: italic; */
     font-size: 0.875rem;
     margin: 1rem 0;
+}
+
+/* One key to the marks used in the author lists, under the first list only. */
+.publication-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1rem 1.75rem;
+    margin: 0.9rem 0 1.1rem;
+    font-size: 0.8125rem;
+    color: #6b7280;
+}
+
+.legend-key {
+    margin-right: 0.6em;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* A list that starts right under its heading keeps its distance from it. */
+.section-title + .publication {
+    margin-top: 1.5rem;
 }
 
 .publication-links {
@@ -394,29 +513,108 @@ canvas {
 
 
 /*
- * Footer styled after an editor status line; it stays pinned to the bottom of the window.
- * Square segments, as in the terminal: the two ends carry the mode colour, the segments next to
- * them sit on a darker surface, and the path fills the rest. Colours are a light, warm take on
- * Catppuccin.
+ * Editor chrome on the main page: a tabline of sections on top and a status line below. Both are
+ * fixed to the window rather than sticky, so they stay put when the page rubber-bands past either
+ * end; the body reserves their height. Square segments, as in the terminal, in a light, warm take
+ * on Catppuccin: the outer blocks carry the accent, the ones next to them a darker surface.
  */
+.tabline,
 .statusline {
     --status-accent: #f9d9ef;
     --status-surface: #e4d9ce;
     --status-base: #f2ebe4;
-    position: sticky;
-    bottom: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
     z-index: 5;
     display: flex;
     justify-content: space-between;
     font-size: 0.875rem;
     font-weight: 500;
-    line-height: 1.5rem;
-    margin-top: 4rem;
     color: #4c4f69;
     background: var(--status-base);
     white-space: nowrap;
     overflow: hidden;
     user-select: none;
+}
+
+.tabline {
+    top: 0;
+    line-height: var(--tabline-height);
+}
+
+.statusline {
+    bottom: 0;
+    line-height: var(--statusline-height);
+}
+
+body:has(> .tabline) {
+    padding-top: var(--tabline-height);
+}
+
+body:has(> .statusline) {
+    padding-bottom: var(--statusline-height);
+}
+
+.tabline-name {
+    flex: none;
+    padding: 0 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #303446;
+    background: var(--status-accent);
+    text-decoration: none;
+}
+
+/* Sections as buffers. The list gives way before the name or the address does. */
+.tabline-tabs {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.tabline-tab {
+    padding: 0 0.9rem;
+    color: #65687e;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.tabline-tab:hover {
+    color: #303446;
+}
+
+.tabline-index {
+    margin-right: 0.5em;
+    font-weight: 400;
+    color: #b8afa6;
+}
+
+/* The current buffer takes the page colour, the way a bufferline shows it. */
+.tabline-tab.is-active {
+    font-weight: 700;
+    color: #303446;
+    background: var(--page);
+}
+
+.tabline-tab.is-active .tabline-index {
+    color: #8c8fa1;
+}
+
+.tabline-tab:focus-visible,
+.tabline-name:focus-visible {
+    outline-offset: -2px;
+}
+
+.tabline-meta {
+    flex: 0 1 auto;
+    min-width: 0;
+    padding: 0 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #5c5f77;
+    background: var(--status-surface);
 }
 
 /* Text is selected: visual mode. */
@@ -473,6 +671,73 @@ canvas {
     vertical-align: -0.12em;
 }
 
+/*
+ * Desktop scrollbar, built by nvim.js: a column between the two bars with a square thumb in the
+ * bars' surface colour, ticks where the sections start and one for the cursor. The native
+ * scrollbar is hidden while it is in use (the class is only set once the replacement exists).
+ */
+html.has-scrollbar {
+    scrollbar-width: none;
+}
+
+html.has-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar {
+    position: fixed;
+    top: var(--tabline-height);
+    bottom: var(--statusline-height);
+    right: 0;
+    z-index: 4;
+    width: var(--scrollbar-width);
+    touch-action: none;
+}
+
+.scrollbar.is-idle {
+    visibility: hidden;
+}
+
+.scrollbar-thumb,
+.scrollbar-mark,
+.scrollbar-cursor {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.scrollbar-thumb {
+    top: 0;
+    background: #e4d9ce;
+    transition: background-color 0.15s ease;
+}
+
+.scrollbar:hover .scrollbar-thumb,
+.scrollbar.is-dragging .scrollbar-thumb {
+    background: #d3c6b8;
+}
+
+.scrollbar-mark,
+.scrollbar-cursor {
+    height: 2px;
+    pointer-events: none;
+}
+
+.scrollbar-mark {
+    background: #c7baad;
+}
+
+.scrollbar-cursor {
+    height: 3px;
+    margin-top: -1px;
+    background: #e58fc9;
+}
+
+/* Keys typed so far that still wait for the rest of a command (vim's showcmd). */
+.statusline-pending {
+    color: #303446;
+}
+
 .friend-links-list {
     display: flex;
     flex-wrap: wrap;
@@ -481,6 +746,9 @@ canvas {
 }
 
 .friend-link-name {
+    display: inline-block;
+    position: relative;
+    scroll-margin: calc(var(--tabline-height) + 1.5rem) 0 calc(var(--statusline-height) + 1.5rem);
     color: #111827;
     font-size: 0.98rem;
     line-height: 1.6;
@@ -520,6 +788,49 @@ canvas {
     border-radius: 0;
 }
 
+/* Tabline: drop the file extensions first, then the buffer list, as the window narrows. */
+@media (max-width: 1040px) {
+    .tabline-ext {
+        display: none;
+    }
+}
+
+@media (max-width: 840px) {
+    .tabline-tabs {
+        visibility: hidden;
+    }
+}
+
+@media (max-width: 480px) {
+    .tabline,
+    .statusline {
+        font-size: 0.78rem;
+    }
+
+    .statusline-position {
+        min-width: 3rem;
+    }
+
+    .tabline-name,
+    .tabline-meta {
+        padding: 0 0.6rem;
+    }
+}
+
+/* Small phones: keep the address whole, at the cost of the name block (the hero repeats it). */
+@media (max-width: 400px) {
+    .tabline,
+    .statusline {
+        font-size: 0.72rem;
+    }
+}
+
+@media (max-width: 350px) {
+    .tabline-name {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 0 1rem;
@@ -557,6 +868,19 @@ canvas {
 
     .statusline-group > * {
         padding: 0 0.6rem;
+    }
+}
+
+@media print {
+    .tabline,
+    .statusline,
+    .scrollbar {
+        display: none;
+    }
+
+    body:has(> .tabline),
+    body:has(> .statusline) {
+        padding: 0;
     }
 }
 
