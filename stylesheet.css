@@ -130,6 +130,10 @@ canvas {
 }
 
 .hero-name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.9rem;
     margin-bottom: 1rem;
     font-family: var(--font-heading);
     font-size: 1.75rem;
@@ -137,6 +141,18 @@ canvas {
     line-height: 1.2;
     letter-spacing: 0.12em;
     color: #111827;
+}
+
+.hero-name-en,
+.hero-name-zh {
+    white-space: nowrap;
+}
+
+.hero-name-zh {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
 }
 
 /* The intro text fills the avatar's height: name at its top edge, buttons at its bottom edge. */
